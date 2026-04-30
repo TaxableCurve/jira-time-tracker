@@ -48,7 +48,7 @@ export function HoursByProject({ worklogs }: Props) {
 
   return (
     <Card className="p-4">
-      <SectionLabel as="h3" className="mb-4">Hours by task</SectionLabel>
+      <SectionLabel as="h2" className="mb-4">Hours by task</SectionLabel>
 
       <div style={{ height: 160 }}>
         <ResponsiveContainer width="100%" height="100%">

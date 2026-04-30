@@ -56,7 +56,7 @@ export function EstimateAccuracy({ worklogs }: Props) {
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <SectionLabel as="h3">Estimate accuracy</SectionLabel>
+        <SectionLabel as="h2">Estimate accuracy</SectionLabel>
         <div className="flex gap-3">
           {overCount > 0 && (
             <span className="font-mono text-[10px]" style={{ color: "#DE4E4E" }}>

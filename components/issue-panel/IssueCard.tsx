@@ -68,7 +68,7 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
           <div className="flex items-center gap-1.5 mb-1">
             <Badge color={color}>{issue.key}</Badge>
             <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: statusColor }} />
-            <span className="font-mono text-[10px] truncate text-[#767680]">
+            <span className="font-mono text-[10px] truncate text-[#9A9AA4]">
               {issue.fields.status.name}
             </span>
           </div>
@@ -86,7 +86,7 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
                   {secondsToHuman(issue.fields.timespent ?? 0)} logged
                 </span>
                 {issue.fields.timeoriginalestimate && (
-                  <span className="font-mono text-[10px] text-[#767680]">
+                  <span className="font-mono text-[10px] text-[#9A9AA4]">
                     {secondsToHuman(issue.fields.timeoriginalestimate)} est.
                   </span>
                 )}
@@ -122,6 +122,7 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
               background: isTimerActive ? "rgba(232,124,46,0.2)" : "rgba(255,255,255,0.06)",
               color: isTimerActive ? "#E87C2E" : "#9A9AA4",
             }}
+            aria-label={isTimerActive ? `Stop timer for ${issue.key}` : `Start timer for ${issue.key}`}
             title={isTimerActive ? "Stop timer" : "Start timer"}
           >
             {isTimerActive ? (

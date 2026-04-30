@@ -45,6 +45,7 @@ export function IssueList({ activeIssueKey, onStartTimer }: Props) {
         {projects && projects.length > 0 && (
           <Select value={selectedProject} onValueChange={(v) => setSelectedProject(v ?? "")}>
             <SelectTrigger
+              aria-label="Filter by project"
               className="w-full h-auto py-1.5 px-2.5 rounded text-xs border-white/7 bg-white/4"
               style={{ fontFamily: "var(--font-jetbrains)" }}
             >

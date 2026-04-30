@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { ReportFilters, getRangeFromPreset, type RangePreset, type DateRange } from "@/components/reports/ReportFilters";
 import { SummaryCards } from "@/components/reports/SummaryCards";
-import { HoursByProject } from "@/components/reports/HoursByProject";
-import { HoursByProjectGroup } from "@/components/reports/HoursByProjectGroup";
-import { HoursByDay } from "@/components/reports/HoursByDay";
-import { HoursHeatmap } from "@/components/reports/HoursHeatmap";
-import { EstimateAccuracy } from "@/components/reports/EstimateAccuracy";
 import { ConsistencyStreak } from "@/components/reports/ConsistencyStreak";
+import { EstimateAccuracy } from "@/components/reports/EstimateAccuracy";
 import { useWorklogRange } from "@/hooks/useWorklogs";
+
+const HoursByDay = dynamic(() => import("@/components/reports/HoursByDay").then((m) => m.HoursByDay));
+const HoursByProject = dynamic(() => import("@/components/reports/HoursByProject").then((m) => m.HoursByProject));
+const HoursByProjectGroup = dynamic(() => import("@/components/reports/HoursByProjectGroup").then((m) => m.HoursByProjectGroup));
+const HoursHeatmap = dynamic(() => import("@/components/reports/HoursHeatmap").then((m) => m.HoursHeatmap));
 
 export default function ReportsPage() {
   const [preset, setPreset] = useState<RangePreset>("this-month");

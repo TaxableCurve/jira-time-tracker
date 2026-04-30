@@ -74,7 +74,7 @@ export function HoursHeatmap({ worklogs, from, to }: Props) {
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <SectionLabel as="h3">Hours heatmap</SectionLabel>
+        <SectionLabel as="h2">Hours heatmap</SectionLabel>
         <div className="flex items-center gap-1.5">
           <span className="font-mono text-[9px] text-[#767680]">less</span>
           {[0, 0.2, 0.4, 0.7, 1].map((r) => (

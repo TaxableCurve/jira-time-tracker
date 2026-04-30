@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useSyncExternalStore } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -45,7 +45,7 @@ export function CalendarView() {
     to: new Date(new Date().setDate(new Date().getDate() + 7)),
   });
   const [popup, setPopup] = useState<Popup | null>(null);
-  const [mounted] = useState(() => typeof window !== "undefined");
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
 
   const { data: worklogs, isLoading } = useWorklogRange(range.from, range.to);
   const createWorklog = useCreateWorklog();

@@ -59,7 +59,7 @@ export function ConsistencyStreak({ worklogs, from, to }: Props) {
 
   return (
     <Card className="p-4">
-      <SectionLabel as="h3" className="mb-4">Consistency</SectionLabel>
+      <SectionLabel as="h2" className="mb-4">Consistency</SectionLabel>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         {stats.map((s) => (

@@ -245,6 +245,13 @@ function AppShell({ children }: { children: React.ReactNode }) {
         </aside>
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
+
+      <div
+        className="flex items-center justify-between px-4 py-1.5 border-t border-white/4"
+        style={{ background: "rgba(255,255,255,0.01)" }}
+      >
+        <span className="font-mono text-[9px] text-white/15 tracking-widest">v1.0.0</span>
+      </div>
     </div>
   );
 }

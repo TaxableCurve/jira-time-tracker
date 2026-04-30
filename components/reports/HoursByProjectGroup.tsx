@@ -25,7 +25,7 @@ export function HoursByProjectGroup({ worklogs }: Props) {
 
   return (
     <Card className="p-4">
-      <SectionLabel as="h3" className="mb-4">Hours by project</SectionLabel>
+      <SectionLabel as="h2" className="mb-4">Hours by project</SectionLabel>
 
       <div className="space-y-3">
         {sorted.map(([key, val], i) => {
