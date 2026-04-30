@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jira Time Tracker
 
-## Getting Started
+App personal para registrar tiempo en Jira con vista de calendario interactivo, timer en vivo y reportes.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Calendario interactivo** — vistas semanal y mensual con bloques de tiempo coloreados por proyecto
+- **Timer en vivo** — inicia/detiene desde cualquier issue; registra el worklog en Jira automáticamente
+- **Panel lateral de issues** — lista filtrable por texto y proyecto con tiempo loggeado vs estimado
+- **Drag & drop** — crea, mueve y redimensiona bloques de tiempo directamente en el calendario
+- **Reportes** — resumen de horas por período con donut chart por tarea y heatmap de actividad
+- **Proxy seguro** — las credenciales nunca salen del servidor (Next.js API Routes)
+
+## Stack
+
+| Capa | Tecnología |
+|------|-----------|
+| Frontend + API | Next.js 14 (App Router) |
+| Estilos | Tailwind CSS + shadcn/ui |
+| Calendario | FullCalendar (React) |
+| Charts | Recharts |
+| Estado / Cache | TanStack Query + Zustand |
+| Auth | API Token personal de Atlassian |
+| Integración | Jira REST API v3 |
+
+## Autenticación
+
+Se usa **API Token personal** de Atlassian. Al abrir la app por primera vez, se muestra una pantalla de configuración donde se ingresa:
+
+- **Jira URL** — ej: `empresa.atlassian.net`
+- **Email** — correo de la cuenta de Atlassian
+- **API Token** — generado en [id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+
+Las credenciales se guardan en `localStorage`. Las llamadas a Jira **siempre pasan por el servidor** — el token nunca queda expuesto en el browser.
+
+## Estructura del proyecto
+
+```
+app/
+├── setup/               # Pantalla inicial de configuración
+├── (app)/
+│   ├── calendar/        # Vista principal con calendario
+│   ├── reports/         # Reportes de horas
+│   └── layout.tsx       # Layout con sidebar de issues + timer global
+└── api/jira/
+    ├── validate/        # Valida token contra /rest/api/3/myself
+    ├── search/jql/      # Busca issues asignados
+    ├── projects/        # Lista proyectos accesibles
+    └── worklogs/        # CRUD de worklogs
+
+components/
+├── calendar/            # WeekView, MonthView, WorklogBlock
+├── timer/               # TimerBar, TimerControls
+├── issue-panel/         # IssueList, IssueCard
+└── reports/             # HoursByProject, HeatmapCalendar
+
+lib/
+├── jira.ts              # Cliente Jira API (server-side)
+└── format.ts            # Helpers segundos ↔ horas
+
+store/
+└── timer.ts             # Estado global del timer (Zustand)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Requisitos
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Node.js 18+
+- Cuenta de Atlassian con acceso a un sitio Jira Cloud
+- API Token de Atlassian
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Instalación y desarrollo
 
-## Learn More
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Abrir [http://localhost:3000](http://localhost:3000). La app redirige a `/setup` si no hay credenciales configuradas.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+docker compose up
+```
 
-## Deploy on Vercel
+La app queda disponible en [http://localhost:3000](http://localhost:3000).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Endpoints Jira utilizados
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Método | Endpoint | Uso |
+|--------|----------|-----|
+| GET | `/rest/api/3/myself` | Validar token y obtener accountId |
+| POST | `/rest/api/3/search/jql` | Listar issues asignados |
+| GET | `/rest/api/3/project` | Listar proyectos |
+| GET | `/rest/api/3/issue/{id}/worklog` | Leer worklogs de un issue |
+| POST | `/rest/api/3/issue/{id}/worklog` | Crear worklog |
+| PUT | `/rest/api/3/issue/{id}/worklog/{worklogId}` | Actualizar worklog |
+| DELETE | `/rest/api/3/issue/{id}/worklog/{worklogId}` | Eliminar worklog |
