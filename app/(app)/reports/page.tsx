@@ -4,7 +4,11 @@ import { useState } from "react";
 import { ReportFilters, getRangeFromPreset, type RangePreset, type DateRange } from "@/components/reports/ReportFilters";
 import { SummaryCards } from "@/components/reports/SummaryCards";
 import { HoursByProject } from "@/components/reports/HoursByProject";
+import { HoursByProjectGroup } from "@/components/reports/HoursByProjectGroup";
+import { HoursByDay } from "@/components/reports/HoursByDay";
 import { HoursHeatmap } from "@/components/reports/HoursHeatmap";
+import { EstimateAccuracy } from "@/components/reports/EstimateAccuracy";
+import { ConsistencyStreak } from "@/components/reports/ConsistencyStreak";
 import { useWorklogRange } from "@/hooks/useWorklogs";
 
 export default function ReportsPage() {
@@ -48,8 +52,12 @@ export default function ReportsPage() {
       {worklogs && (
         <>
           <SummaryCards worklogs={worklogs} />
+          <ConsistencyStreak worklogs={worklogs} from={range.from} to={range.to} />
 
+          <HoursByDay worklogs={worklogs} from={range.from} to={range.to} />
+          <HoursByProjectGroup worklogs={worklogs} />
           <HoursByProject worklogs={worklogs} />
+          <EstimateAccuracy worklogs={worklogs} />
           <HoursHeatmap worklogs={worklogs} from={range.from} to={range.to} />
         </>
       )}

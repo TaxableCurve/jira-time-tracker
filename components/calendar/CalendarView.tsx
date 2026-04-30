@@ -193,9 +193,9 @@ export function CalendarView() {
           headerToolbar={{
             left: "prev,next today",
             center: "title",
-            right: "timeGridWeek,dayGridMonth",
+            right: "timeGridDay,timeGridWeek,dayGridMonth",
           }}
-          buttonText={{ today: "Today", week: "Week", month: "Month" }}
+          buttonText={{ today: "Today", day: "Day", week: "Week", month: "Month" }}
           events={events}
           selectable
           selectMirror
@@ -207,7 +207,8 @@ export function CalendarView() {
           eventResize={handleEventResize}
           datesSet={handleDatesSet}
           nowIndicator
-          navLinks={false}
+          navLinks
+          navLinkDayClick="timeGridDay"
           allDaySlot={false}
           slotMinTime="07:00:00"
           slotMaxTime="22:00:00"
