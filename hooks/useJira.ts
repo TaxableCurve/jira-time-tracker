@@ -65,7 +65,10 @@ export function useUpdateWorklog() {
       }
       return res.json();
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["worklogs"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["worklogs"] });
+      queryClient.invalidateQueries({ queryKey: ["issues"] });
+    },
   });
 }
 
@@ -84,7 +87,10 @@ export function useDeleteWorklog() {
         throw new Error(msg);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["worklogs"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["worklogs"] });
+      queryClient.invalidateQueries({ queryKey: ["issues"] });
+    },
   });
 }
 
@@ -110,6 +116,7 @@ export function useCreateWorklog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["worklogs"] });
+      queryClient.invalidateQueries({ queryKey: ["issues"] });
     },
   });
 }

@@ -13,9 +13,9 @@ interface Props {
 }
 
 export function HoursByProject({ worklogs }: Props) {
-  const byIssue = worklogs.reduce<Record<string, { seconds: number; name: string }>>((acc, wl) => {
+  const byIssue = worklogs.reduce<Record<string, { seconds: number; name: string; estimate: number | null }>>((acc, wl) => {
     const key = wl.issueKey;
-    if (!acc[key]) acc[key] = { seconds: 0, name: wl.issueName };
+    if (!acc[key]) acc[key] = { seconds: 0, name: wl.issueName, estimate: wl.originalEstimateSeconds ?? null };
     acc[key].seconds += wl.timeSpentSeconds;
     return acc;
   }, {});
@@ -68,25 +68,49 @@ export function HoursByProject({ worklogs }: Props) {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-3 space-y-1.5 max-h-40 overflow-y-auto">
-        {data.map((entry) => (
-          <div key={entry.key} className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: entry.color }} />
-              <div className="min-w-0">
-                <span className="font-mono text-[10px] text-primary">{entry.shortName}</span>
-                {entry.key !== "others" && (
-                  <span className="font-sans text-[10px] truncate block text-muted-foreground">
-                    {entry.name.split(" · ")[1]}
+      <div className="mt-3 space-y-3 max-h-56 overflow-y-auto pr-1">
+        {data.map((entry) => {
+          const estimate = entry.key !== "others" ? byIssue[entry.key]?.estimate ?? null : null;
+          const pct = estimate ? Math.min(entry.seconds / estimate, 1) : null;
+          const over = estimate ? entry.seconds > estimate : false;
+          const barColor = !pct ? entry.color : over ? "#DE4E4E" : pct >= 0.8 ? "#E8B42E" : "#7ADE9A";
+
+          return (
+            <div key={entry.key}>
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: entry.color }} />
+                  <div className="min-w-0">
+                    <span className="font-mono text-[10px] text-primary">{entry.shortName}</span>
+                    {entry.key !== "others" && (
+                      <span className="font-sans text-[10px] truncate block text-muted-foreground">
+                        {entry.name.split(" · ")[1]}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <span className="font-mono text-xs tabular-nums" style={{ color: barColor }}>
+                    {secondsToHuman(entry.seconds)}
                   </span>
-                )}
+                  {estimate && (
+                    <span className="font-mono text-[10px] tabular-nums text-[#767680]">
+                      / {secondsToHuman(estimate)}
+                    </span>
+                  )}
+                </div>
               </div>
+              {pct !== null && (
+                <div className="h-px w-full rounded-full overflow-hidden ml-4" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ width: `${pct * 100}%`, background: barColor }}
+                  />
+                </div>
+              )}
             </div>
-            <span className="font-mono text-xs tabular-nums flex-shrink-0 text-foreground">
-              {secondsToHuman(entry.seconds)}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </Card>
   );

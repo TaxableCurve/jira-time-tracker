@@ -68,17 +68,15 @@ function TimerBar() {
 
 function SettingsModal({ onClose }: { onClose: () => void }) {
   const router = useRouter();
-  const [form, setForm] = useState({ baseUrl: "", email: "", token: "" });
+  const [form, setForm] = useState(() => {
+    if (typeof window === "undefined") return { baseUrl: "", email: "", token: "" };
+    const raw = localStorage.getItem("jira_config");
+    if (!raw) return { baseUrl: "", email: "", token: "" };
+    const config = JSON.parse(raw);
+    return { baseUrl: config.baseUrl ?? "", email: config.email ?? "", token: config.token ?? "" };
+  });
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
   const [errorMsg, setErrorMsg] = useState("");
-
-  useEffect(() => {
-    const raw = localStorage.getItem("jira_config");
-    if (raw) {
-      const config = JSON.parse(raw);
-      setForm({ baseUrl: config.baseUrl ?? "", email: config.email ?? "", token: config.token ?? "" });
-    }
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -16,6 +16,8 @@ interface SearchResult {
     fields: {
       summary: string;
       project: { key: string; name: string };
+      timeoriginalestimate: number | null;
+      timespent: number | null;
     };
   }[];
 }
@@ -40,7 +42,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         jql,
         maxResults: 100,
-        fields: ["summary", "project"],
+        fields: ["summary", "project", "timeoriginalestimate", "timespent"],
       }),
     });
 
@@ -74,6 +76,8 @@ export async function POST(req: NextRequest) {
           start: wl.started,
           end: new Date(new Date(wl.started).getTime() + wl.timeSpentSeconds * 1000).toISOString(),
           timeSpentSeconds: wl.timeSpentSeconds,
+          originalEstimateSeconds: issue.fields.timeoriginalestimate,
+          totalTimeSpentSeconds: issue.fields.timespent,
         }))
     );
 

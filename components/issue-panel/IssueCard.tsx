@@ -80,17 +80,32 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
 
           {/* Time info */}
           {(issue.fields.timespent || issue.fields.timeoriginalestimate) && (
-            <div className="flex items-center gap-2 mt-1.5">
-              {issue.fields.timespent && (
+            <div className="mt-1.5 space-y-1">
+              <div className="flex items-center justify-between gap-2">
                 <span className="font-mono text-[10px] text-primary">
-                  {secondsToHuman(issue.fields.timespent)} logged
+                  {secondsToHuman(issue.fields.timespent ?? 0)} logged
                 </span>
-              )}
-              {issue.fields.timeoriginalestimate && (
-                <span className="font-mono text-[10px] text-[#767680]">
-                  / {secondsToHuman(issue.fields.timeoriginalestimate)} est.
-                </span>
-              )}
+                {issue.fields.timeoriginalestimate && (
+                  <span className="font-mono text-[10px] text-[#767680]">
+                    {secondsToHuman(issue.fields.timeoriginalestimate)} est.
+                  </span>
+                )}
+              </div>
+              {issue.fields.timeoriginalestimate && (() => {
+                const spent = issue.fields.timespent ?? 0;
+                const estimate = issue.fields.timeoriginalestimate;
+                const pct = Math.min(spent / estimate, 1);
+                const over = spent > estimate;
+                const barColor = over ? "#DE4E4E" : pct >= 0.8 ? "#E8B42E" : "#7ADE9A";
+                return (
+                  <div className="h-px w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{ width: `${pct * 100}%`, background: barColor }}
+                    />
+                  </div>
+                );
+              })()}
             </div>
           )}
         </div>

@@ -12,6 +12,8 @@ export interface WorklogEvent {
   start: string;
   end: string;
   timeSpentSeconds: number;
+  originalEstimateSeconds: number | null;
+  totalTimeSpentSeconds: number | null;
 }
 
 export function useWorklogRange(from: Date, to: Date) {

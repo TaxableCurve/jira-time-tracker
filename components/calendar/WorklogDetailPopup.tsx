@@ -88,6 +88,37 @@ export function WorklogDetailPopup({ worklog, position, onClose }: Props) {
         <p className="font-mono text-[10px] mt-1 text-[#767680]">{worklog.projectName}</p>
       </div>
 
+      {/* Estimate progress */}
+      {worklog.originalEstimateSeconds && (
+        <div className="px-3 py-2 border-b border-white/7 space-y-1.5">
+          {(() => {
+            const spent = worklog.totalTimeSpentSeconds ?? 0;
+            const estimate = worklog.originalEstimateSeconds;
+            const pct = Math.min(spent / estimate, 1);
+            const over = spent > estimate;
+            const barColor = over ? "#DE4E4E" : pct >= 0.8 ? "#E8B42E" : "#7ADE9A";
+            return (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px]" style={{ color: barColor }}>
+                    {secondsToHuman(spent)} logged
+                  </span>
+                  <span className="font-mono text-[10px] text-[#767680]">
+                    {secondsToHuman(estimate)} est.
+                  </span>
+                </div>
+                <div className="h-px w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ width: `${pct * 100}%`, background: barColor }}
+                  />
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      )}
+
       {/* Fields */}
       <div className="p-3 space-y-2.5">
         <div>
