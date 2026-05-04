@@ -118,7 +118,7 @@ export function ConsistencyStreak({ worklogs, from, to }: Props) {
             ? hd.isHoliday(new Date(key + "T12:00:00"))
             : null;
           const title = isHoliday
-            ? `${format(day, "EEE MMM d")} — ${Array.isArray(holidayName) ? holidayName[0]?.name : "festivo"}`
+            ? `${format(day, "EEE MMM d")} — ${Array.isArray(holidayName) ? holidayName[0]?.name : "holiday"}`
             : `${format(day, "EEE MMM d")}${logged ? " ✓" : " — no log"}`;
           const bg = isHoliday
             ? "rgba(120,120,200,0.5)"
@@ -151,7 +151,7 @@ export function ConsistencyStreak({ worklogs, from, to }: Props) {
         </div>
         <div className="flex items-center gap-1">
           <span style={{ width: 8, height: 8, borderRadius: 2, background: "rgba(120,120,200,0.5)", display: "inline-block" }} />
-          <span className="font-mono text-[9px] text-muted-foreground">festivo</span>
+          <span className="font-mono text-[9px] text-muted-foreground">holiday</span>
         </div>
       </div>
     </Card>
