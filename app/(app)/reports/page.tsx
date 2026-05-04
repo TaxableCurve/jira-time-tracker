@@ -25,9 +25,9 @@ export default function ReportsPage() {
   const { data: worklogs, isLoading } = useWorklogRange(range.from, range.to);
 
   return (
-    <div className="p-5 space-y-5 max-w-4xl">
+    <div className="p-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-xl font-700 leading-none" style={{ fontFamily: "var(--font-syne)" }}>
             Reports
@@ -52,21 +52,36 @@ export default function ReportsPage() {
       />
 
       {worklogs && (
-        <>
-          <SummaryCards worklogs={worklogs} />
-          <ConsistencyStreak worklogs={worklogs} from={range.from} to={range.to} />
-
-          <HoursByDay worklogs={worklogs} from={range.from} to={range.to} />
-          <HoursByProjectGroup worklogs={worklogs} />
-          <HoursByProject worklogs={worklogs} />
-          <EstimateAccuracy worklogs={worklogs} />
-          <HoursHeatmap worklogs={worklogs} from={range.from} to={range.to} />
-        </>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
+          <div className="lg:col-span-2">
+            <SummaryCards worklogs={worklogs} />
+          </div>
+          <div className="lg:col-span-2">
+            <ConsistencyStreak worklogs={worklogs} from={range.from} to={range.to} />
+          </div>
+          <div className="lg:col-span-2">
+            <HoursByDay worklogs={worklogs} from={range.from} to={range.to} />
+          </div>
+          <div className="lg:col-span-2">
+            <HoursByProjectGroup worklogs={worklogs} />
+          </div>
+          <div className="lg:col-span-2 flex flex-col lg:flex-row gap-5 items-start">
+            <div className="flex-1 min-w-0">
+              <HoursByProject worklogs={worklogs} />
+            </div>
+            <div className="shrink-0">
+              <HoursHeatmap worklogs={worklogs} from={range.from} to={range.to} />
+            </div>
+          </div>
+          <div className="lg:col-span-2">
+            <EstimateAccuracy worklogs={worklogs} />
+          </div>
+        </div>
       )}
 
       {worklogs?.length === 0 && !isLoading && (
         <div
-          className="rounded-lg p-10 text-center"
+          className="rounded-lg p-10 text-center mt-5"
           style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
         >
           <p className="text-sm" style={{ fontFamily: "var(--font-jetbrains)", color: "#3A3A3F" }}>

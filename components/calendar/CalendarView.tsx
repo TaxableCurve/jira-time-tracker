@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, useCallback, useSyncExternalStore } from "react";
+import { useRef, useState, useCallback, useSyncExternalStore, useMemo } from "react";
+import Holidays from "date-holidays";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -51,6 +52,30 @@ export function CalendarView() {
   const createWorklog = useCreateWorklog();
   const updateWorklog = useUpdateWorklog();
   const invalidate = useInvalidateWorklogs();
+
+  const fromYear = range.from.getFullYear();
+  const toYear = range.to.getFullYear();
+  const { holidayEvents, holidayMap } = useMemo(() => {
+    const hd = new Holidays("CO");
+    const years = new Set([fromYear, toYear]);
+    const map = new Map<string, string>();
+    const events = Array.from(years).flatMap((year) =>
+      hd.getHolidays(year).map((h) => {
+        map.set(h.date.slice(0, 10), h.name);
+        return {
+          title: h.name,
+          start: h.date.slice(0, 10),
+          allDay: true,
+          display: "background",
+          backgroundColor: "rgba(120,120,200,0.12)",
+          borderColor: "rgba(120,120,200,0.4)",
+          classNames: ["fc-holiday"],
+          extendedProps: { isHoliday: true, holidayName: h.name },
+        };
+      })
+    );
+    return { holidayEvents: events, holidayMap: map };
+  }, [fromYear, toYear]);
 
   const events = worklogs?.map((wl) => {
     const color = projectColor(wl.projectKey);
@@ -183,6 +208,8 @@ export function CalendarView() {
         .fc-toolbar { padding: 12px 16px !important; }
         .fc-daygrid-day-frame { min-height: 80px !important; }
         .fc-event-resizer { opacity: 0.6; }
+        .fc-holiday { opacity: 1 !important; }
+        .fc-bg-event .fc-event-title { font-family: var(--font-jetbrains) !important; font-size: 9px !important; color: rgba(160,160,230,0.8) !important; padding: 2px 4px !important; text-transform: uppercase !important; letter-spacing: 0.06em !important; }
       `}</style>
 
       <div className="flex-1 overflow-hidden px-2 pb-2">
@@ -196,7 +223,8 @@ export function CalendarView() {
             right: "timeGridDay,timeGridWeek,dayGridMonth",
           }}
           buttonText={{ today: "Today", day: "Day", week: "Week", month: "Month" }}
-          events={events}
+          events={[...holidayEvents, ...(events ?? [])]}
+
           selectable
           selectMirror
           editable
@@ -217,11 +245,33 @@ export function CalendarView() {
           dayCellContent={(arg) => {
             const key = arg.date.toISOString().slice(0, 10);
             const total = dayTotals[key];
+            const holiday = holidayMap.get(key);
             return (
               <div className="flex flex-col items-end px-1 pt-0.5 gap-0.5">
                 <span style={{ fontFamily: "var(--font-jetbrains)", fontSize: 11, color: "#9A9AA4" }}>
                   {arg.dayNumberText}
                 </span>
+                {holiday && (
+                  <span
+                    style={{
+                      fontFamily: "var(--font-jetbrains)",
+                      fontSize: 8,
+                      color: "rgba(160,160,230,0.85)",
+                      background: "rgba(120,120,200,0.12)",
+                      border: "1px solid rgba(120,120,200,0.25)",
+                      borderRadius: 3,
+                      padding: "1px 5px",
+                      letterSpacing: "0.04em",
+                      maxWidth: "100%",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                    title={holiday}
+                  >
+                    {holiday}
+                  </span>
+                )}
                 {total && (
                   <span
                     style={{
@@ -256,6 +306,8 @@ export function CalendarView() {
                 );
               }
             }
+
+            if (arg.event.extendedProps.isHoliday) return null;
 
             const view = arg.view.type;
             if (view === "dayGridMonth") {

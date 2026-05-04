@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { eachDayOfInterval, format, getDay, startOfWeek } from "date-fns";
+import { eachDayOfInterval, format, getDay, getYear, startOfWeek } from "date-fns";
+import Holidays from "date-holidays";
 import { secondsToHuman } from "@/lib/format";
 import { WorklogEvent } from "@/hooks/useWorklogs";
 import { Card } from "@/components/ui/card";
@@ -26,6 +27,7 @@ interface Props {
 interface TooltipData {
   date: string;
   seconds: number;
+  holiday?: string;
   tasks: { key: string; name: string; seconds: number }[];
   x: number;
   y: number;
@@ -33,6 +35,15 @@ interface TooltipData {
 
 export function HoursHeatmap({ worklogs, from, to }: Props) {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
+
+  const hd = new Holidays("CO");
+  const allYears = new Set([getYear(from), getYear(to)]);
+  const holidayMap = new Map<string, string>();
+  for (const year of allYears) {
+    for (const h of hd.getHolidays(year)) {
+      holidayMap.set(h.date.slice(0, 10), h.name);
+    }
+  }
 
   const dayMap = worklogs.reduce<Record<string, { seconds: number; tasks: Record<string, { name: string; seconds: number }> }>>((acc, wl) => {
     const key = wl.start.slice(0, 10);
@@ -67,33 +78,34 @@ export function HoursHeatmap({ worklogs, from, to }: Props) {
     }
   });
 
-  const cellSize = 18;
-  const cellGap = 3;
+  const cellSize = 22;
+  const cellGap = 4;
   const step = cellSize + cellGap;
 
   return (
     <Card className="p-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between gap-4 mb-4">
         <SectionLabel as="h2">Hours heatmap</SectionLabel>
-        <div className="flex items-center gap-1.5">
-          <span className="font-mono text-[9px] text-[#767680]">less</span>
-          {[0, 0.2, 0.4, 0.7, 1].map((r) => (
-            <span
-              key={r}
-              className="rounded-sm"
-              style={{
-                width: 10,
-                height: 10,
-                display: "inline-block",
-                background: r === 0 ? "rgba(255,255,255,0.04)" : `rgba(232,124,46,${(0.15 + r * 0.85).toFixed(2)})`,
-              }}
-            />
+        {/* Numeric scale legend */}
+        <div className="flex items-center gap-2">
+          {([0, 2, 4, 6, 8] as const).map((h, i) => (
+            <div key={h} className="flex items-center gap-1">
+              <span
+                className="rounded-sm flex-shrink-0"
+                style={{
+                  width: 11,
+                  height: 11,
+                  display: "inline-block",
+                  background: i === 0 ? "rgba(255,255,255,0.06)" : intensityColor(h * 3600),
+                }}
+              />
+              <span className="font-mono text-[9px] text-[#767680]">{h}h</span>
+            </div>
           ))}
-          <span className="font-mono text-[9px] text-[#767680]">more</span>
         </div>
       </div>
 
-      <div className="overflow-x-auto flex justify-center">
+      <div className="overflow-x-auto">
         <div style={{ position: "relative", paddingLeft: 28, paddingTop: 20 }}>
           {monthLabels.map(({ label, colIndex }) => (
             <span
@@ -124,6 +136,7 @@ export function HoursHeatmap({ worklogs, from, to }: Props) {
                   const data = key ? dayMap[key] : null;
                   const seconds = data?.seconds ?? 0;
                   const isToday = day ? format(day, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd") : false;
+                  const holidayName = key ? holidayMap.get(key) : undefined;
 
                   return (
                     <div
@@ -132,19 +145,26 @@ export function HoursHeatmap({ worklogs, from, to }: Props) {
                         width: cellSize,
                         height: cellSize,
                         borderRadius: 2,
-                        background: day ? intensityColor(seconds) : "rgba(255,255,255,0.02)",
-                        border: isToday ? "1px solid rgba(232,124,46,0.8)" : "1px solid transparent",
-                        cursor: seconds > 0 ? "pointer" : "default",
+                        background: !day
+                          ? "rgba(255,255,255,0.02)"
+                          : holidayName && seconds === 0
+                          ? "rgba(120,120,200,0.35)"
+                          : intensityColor(seconds),
+                        border: isToday ? "1px solid rgba(232,124,46,0.8)" : holidayName ? "1px solid rgba(120,120,200,0.5)" : "1px solid transparent",
+                        cursor: seconds > 0 || holidayName ? "pointer" : "default",
                       }}
                       onMouseEnter={(e) => {
-                        if (!day || !data) return;
+                        if (!day || (!data && !holidayName)) return;
                         const rect = e.currentTarget.getBoundingClientRect();
                         setTooltip({
                           date: format(day, "EEE, MMM d yyyy"),
                           seconds,
-                          tasks: Object.entries(data.tasks)
-                            .sort((a, b) => b[1].seconds - a[1].seconds)
-                            .map(([k, v]) => ({ key: k, name: v.name, seconds: v.seconds })),
+                          holiday: holidayName,
+                          tasks: data
+                            ? Object.entries(data.tasks)
+                                .sort((a, b) => b[1].seconds - a[1].seconds)
+                                .map(([k, v]) => ({ key: k, name: v.name, seconds: v.seconds }))
+                            : [],
                           x: rect.right + 8,
                           y: rect.top,
                         });
@@ -176,8 +196,13 @@ export function HoursHeatmap({ worklogs, from, to }: Props) {
           }}
         >
           <p className="font-mono text-[10px] text-muted-foreground mb-1">{tooltip.date}</p>
+          {tooltip.holiday && (
+            <p className="font-mono text-[10px] mb-1" style={{ color: "rgba(160,160,230,0.9)" }}>
+              {tooltip.holiday}
+            </p>
+          )}
           <p className="font-sans text-[13px] font-bold text-primary mb-1.5">
-            {secondsToHuman(tooltip.seconds)}
+            {tooltip.seconds > 0 ? secondsToHuman(tooltip.seconds) : "No logs"}
           </p>
           {tooltip.tasks.map((t) => (
             <div key={t.key} className="mb-0.5">
