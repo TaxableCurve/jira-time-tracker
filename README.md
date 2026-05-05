@@ -33,6 +33,8 @@ Se usa **API Token personal** de Atlassian. Al abrir la app por primera vez, se 
 
 Las credenciales se guardan en `localStorage`. Las llamadas a Jira **siempre pasan por el servidor** — el token nunca queda expuesto en el browser.
 
+> **Nota de seguridad:** `localStorage` es accesible por cualquier script que corra en la misma página. Se recomienda usar esta app solo en equipos personales de confianza y no compartir el navegador con otras personas.
+
 ## Estructura del proyecto
 
 ```
