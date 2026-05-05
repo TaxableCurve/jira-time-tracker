@@ -13,7 +13,8 @@ import { FieldLabel } from "@/components/ui/section-label";
 import { Alert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/logo-mark";
-import { Settings } from "lucide-react";
+import { Settings, Bell } from "lucide-react";
+import { useUpdateCheck } from "@/hooks/useUpdateCheck";
 
 function TimerBar() {
   const { issueKey, issueName, startTime, isRunning, stop } = useTimerStore();
@@ -228,6 +229,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 function AppShell({ children }: { children: React.ReactNode }) {
   const { start, issueKey: activeKey } = useTimerStore();
   const [showSettings, setShowSettings] = useState(false);
+  const { hasUpdate, latestVersion } = useUpdateCheck();
 
   return (
     <div className="flex flex-col h-screen">
@@ -243,13 +245,27 @@ function AppShell({ children }: { children: React.ReactNode }) {
         <span className="w-px h-4 mx-3 bg-white/10 flex-shrink-0" />
         <NavLink href="/calendar">Calendar</NavLink>
         <NavLink href="/reports">Reports</NavLink>
-        <button
-          className="ml-auto p-1.5 rounded text-white/50 hover:text-white/80 transition-colors duration-150 cursor-pointer"
-          onClick={() => setShowSettings(true)}
-          aria-label="Settings"
-        >
-          <Settings size={14} strokeWidth={1.5} />
-        </button>
+        <div className="ml-auto flex items-center gap-1">
+          {hasUpdate && (
+            <a
+              href={`https://github.com/TaxableCurve/jira-time-tracker/releases/tag/${latestVersion}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`New version available: ${latestVersion}`}
+              className="relative p-1.5 rounded text-primary hover:text-primary/80 transition-colors duration-150"
+            >
+              <Bell size={14} strokeWidth={1.5} />
+              <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-primary" />
+            </a>
+          )}
+          <button
+            className="p-1.5 rounded text-white/50 hover:text-white/80 transition-colors duration-150 cursor-pointer"
+            onClick={() => setShowSettings(true)}
+            aria-label="Settings"
+          >
+            <Settings size={14} strokeWidth={1.5} />
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
@@ -272,7 +288,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
         className="flex items-center justify-between px-4 py-1.5 border-t border-white/4"
         style={{ background: "rgba(255,255,255,0.01)" }}
       >
-        <span className="font-mono text-[9px] text-white/15 tracking-widest">v1.1.0</span>
+        <span className="font-mono text-[9px] text-white/15 tracking-widest">v{process.env.NEXT_PUBLIC_APP_VERSION}</span>
       </div>
     </div>
   );
