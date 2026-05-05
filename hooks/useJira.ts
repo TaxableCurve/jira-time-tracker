@@ -20,12 +20,13 @@ export function useProjects() {
   });
 }
 
-export function useIssues(projectKey?: string) {
+export function useIssues(projectKey?: string, statusFilter: string = "active") {
   return useQuery({
-    queryKey: ["issues", projectKey ?? "all"],
+    queryKey: ["issues", projectKey ?? "all", statusFilter],
     queryFn: async () => {
-      const url = projectKey ? `/api/jira/issues?project=${projectKey}` : "/api/jira/issues";
-      const res = await fetch(url, { headers: headers() });
+      const params = new URLSearchParams({ statusFilter });
+      if (projectKey) params.set("project", projectKey);
+      const res = await fetch(`/api/jira/issues?${params}`, { headers: headers() });
       if (!res.ok) throw new Error("Failed to fetch issues");
       return res.json();
     },

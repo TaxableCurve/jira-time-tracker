@@ -21,12 +21,9 @@ export function IssueList({ activeIssueKey, onStartTimer }: Props) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
 
   const { data: projects } = useProjects();
-  const { data: issues, isLoading, isError } = useIssues(selectedProject || undefined);
+  const { data: issues, isLoading, isError } = useIssues(selectedProject || undefined, statusFilter);
 
-  const filtered = issues?.filter((issue: { key: string; fields: { summary: string; status: { statusCategory: { key: string } } } }) => {
-    const categoryKey = issue.fields.status.statusCategory.key;
-    if (statusFilter === "active" && categoryKey === "done") return false;
-    if (statusFilter === "done" && categoryKey !== "done") return false;
+  const filtered = issues?.filter((issue: { key: string; fields: { summary: string } }) => {
     if (!search) return true;
     const q = search.toLowerCase();
     return (

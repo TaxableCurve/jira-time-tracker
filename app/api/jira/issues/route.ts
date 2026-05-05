@@ -25,9 +25,15 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const projectKey = searchParams.get("project");
+  const statusFilter = searchParams.get("statusFilter");
 
-  let jql = `assignee = currentUser() ORDER BY updated DESC`;
-  if (projectKey) jql = `assignee = currentUser() AND project = "${projectKey}" ORDER BY updated DESC`;
+  const statusClause =
+    statusFilter === "done" ? `AND statusCategory = Done` :
+    statusFilter === "all" ? "" :
+    `AND statusCategory != Done`;
+
+  let jql = `assignee = currentUser() ${statusClause} ORDER BY updated DESC`;
+  if (projectKey) jql = `assignee = currentUser() AND project = "${projectKey}" ${statusClause} ORDER BY updated DESC`;
 
   try {
     const data = await jiraFetch<SearchResult>(config, `/search/jql`, {
