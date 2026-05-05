@@ -1,4 +1,3 @@
-import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
@@ -18,7 +17,7 @@ const buttonVariants = cva(
         ghost:
           "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/8 active:scale-[0.98]",
         toggle:
-          "uppercase tracking-[0.12em] border bg-white/4 text-muted-foreground border-white/7 data-[active=true]:bg-primary/12 data-[active=true]:text-primary data-[active=true]:border-primary/25",
+          "uppercase tracking-[0.12em] border bg-white/4 text-muted-foreground border-white/7 hover:bg-white/8 hover:text-foreground data-[active=true]:bg-primary/12 data-[active=true]:text-primary data-[active=true]:border-primary/25 data-[active=true]:hover:bg-primary/12",
       },
       size: {
         xs: "h-6 px-2 text-[10px]",
@@ -37,13 +36,13 @@ const buttonVariants = cva(
   }
 )
 
-interface ButtonProps extends ButtonPrimitive.Props, VariantProps<typeof buttonVariants> {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   isActive?: boolean
 }
 
 function Button({ className, variant, size, isActive, ...props }: ButtonProps) {
   return (
-    <ButtonPrimitive
+    <button
       data-slot="button"
       data-active={isActive}
       className={cn(buttonVariants({ variant, size, className }))}

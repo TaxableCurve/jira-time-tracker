@@ -192,9 +192,11 @@ export function CalendarView() {
         .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: rgba(255,255,255,0.06) !important; }
         .fc-col-header-cell-cushion, .fc-daygrid-day-number { color: #9A9AA4 !important; text-decoration: none !important; font-family: var(--font-jetbrains); font-size: 11px; }
         .fc-timegrid-slot-label-cushion { color: #767680 !important; font-family: var(--font-jetbrains); font-size: 10px; }
-        .fc-button { background: rgba(255,255,255,0.06) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: #B0B0B8 !important; font-family: var(--font-jetbrains) !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 0.08em !important; border-radius: 3px !important; padding: 4px 10px !important; }
+        .fc-button { background: rgba(255,255,255,0.06) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: #B0B0B8 !important; font-family: var(--font-jetbrains) !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 0.08em !important; border-radius: 3px !important; padding: 4px 10px !important; cursor: pointer !important; }
         .fc-button:hover { background: rgba(255,255,255,0.1) !important; color: #E8E8E4 !important; }
         .fc-button-active, .fc-button:focus { background: rgba(232,124,46,0.15) !important; border-color: rgba(232,124,46,0.3) !important; color: #E87C2E !important; box-shadow: none !important; }
+        .fc-button-group .fc-button { margin-left: 4px !important; }
+        .fc-button-group .fc-button:first-child { margin-left: 0 !important; }
         .fc-toolbar-title { font-family: var(--font-syne) !important; font-size: 14px !important; font-weight: 700 !important; color: #E8E8E4 !important; }
         .fc-highlight { background: rgba(232,124,46,0.08) !important; }
         .fc-event-mirror { background-color: rgba(232,124,46,0.12) !important; border-color: rgba(232,124,46,0.5) !important; }
@@ -244,7 +246,7 @@ export function CalendarView() {
           slotMinTime="07:00:00"
           slotMaxTime="22:00:00"
           slotDuration="00:30:00"
-          snapDuration="00:05:00"
+          snapDuration="00:15:00"
           height="100%"
           dayCellContent={(arg) => {
             const key = arg.date.toISOString().slice(0, 10);

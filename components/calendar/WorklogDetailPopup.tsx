@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { AmberBadge } from "@/components/ui/badge";
 import { FieldLabel } from "@/components/ui/section-label";
 import { PopupContainer } from "@/components/ui/popup-container";
+import { Save, X, Trash2 } from "lucide-react";
 
 interface Props {
   worklog: WorklogEvent;
@@ -82,7 +83,7 @@ export function WorklogDetailPopup({ worklog, position, onClose }: Props) {
       <div className="px-3 py-2.5 border-b border-white/7">
         <div className="flex items-center justify-between">
           <AmberBadge>{worklog.issueKey}</AmberBadge>
-          <Button variant="ghost" size="icon-xs" onClick={onClose}>✕</Button>
+          <Button variant="ghost" size="icon-xs" onClick={onClose}><X size={10} /></Button>
         </div>
         <p className="font-sans text-xs mt-1.5 leading-snug text-[#B0B0B8]">{worklog.issueName}</p>
         <p className="font-mono text-[10px] mt-1 text-[#767680]">{worklog.projectName}</p>
@@ -149,7 +150,7 @@ export function WorklogDetailPopup({ worklog, position, onClose }: Props) {
             disabled={isPending}
             onClick={handleSave}
           >
-            {updateWorklog.isPending ? "Saving..." : "Save changes →"}
+            {updateWorklog.isPending ? "Saving..." : <><Save size={14} />Save changes</>}
           </Button>
         )}
 
@@ -173,7 +174,7 @@ export function WorklogDetailPopup({ worklog, position, onClose }: Props) {
               disabled={isPending}
               onClick={handleDelete}
             >
-              {deleteWorklog.isPending ? "Deleting..." : "Confirm delete"}
+              {deleteWorklog.isPending ? "Deleting..." : <><Trash2 size={14} />Confirm delete</>}
             </Button>
           </div>
         )}

@@ -94,6 +94,35 @@ export function useDeleteWorklog() {
   });
 }
 
+export function useTransitions(issueKey: string) {
+  return useQuery({
+    queryKey: ["transitions", issueKey],
+    queryFn: async () => {
+      const res = await fetch(`/api/jira/transitions?issueKey=${issueKey}`, { headers: headers() });
+      if (!res.ok) throw new Error("Failed to fetch transitions");
+      return res.json() as Promise<{ id: string; name: string; to: { statusCategory: { colorName: string } } }[]>;
+    },
+    staleTime: 60_000,
+  });
+}
+
+export function useExecuteTransition() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ issueKey, transitionId }: { issueKey: string; transitionId: string }) => {
+      const res = await fetch("/api/jira/transitions", {
+        method: "POST",
+        headers: { ...headers(), "Content-Type": "application/json" },
+        body: JSON.stringify({ issueKey, transitionId }),
+      });
+      if (!res.ok) throw new Error("Failed to execute transition");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["issues"], refetchType: "active" });
+    },
+  });
+}
+
 export function useCreateWorklog() {
   const queryClient = useQueryClient();
   return useMutation({

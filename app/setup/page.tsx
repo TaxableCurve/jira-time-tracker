@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { FieldLabel } from "@/components/ui/section-label";
 import { Alert } from "@/components/ui/alert";
 import { LogoMark } from "@/components/ui/logo-mark";
+import { LogIn } from "lucide-react";
 
 export default function SetupPage() {
   const router = useRouter();
@@ -153,14 +154,14 @@ export default function SetupPage() {
               type="submit"
               variant="primary"
               disabled={status === "loading"}
-              className="w-full font-sans uppercase tracking-[0.12em] text-[0.8rem] py-3 active:scale-[0.98]"
+              className="w-full py-3"
             >
               {status === "loading" ? (
                 <span className="flex items-center justify-center gap-2">
                   <Spinner /> Connecting...
                 </span>
               ) : (
-                "Connect →"
+                <><LogIn size={14} />Connect</>
               )}
             </Button>
           </div>

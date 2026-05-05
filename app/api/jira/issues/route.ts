@@ -6,7 +6,7 @@ interface JiraIssue {
   key: string;
   fields: {
     summary: string;
-    status: { name: string; statusCategory: { colorName: string } };
+    status: { name: string; statusCategory: { colorName: string; key: string } };
     project: { key: string; name: string; id: string };
     timeoriginalestimate: number | null;
     timespent: number | null;
@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const projectKey = searchParams.get("project");
 
-  let jql = `assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC`;
-  if (projectKey) jql = `assignee = currentUser() AND project = "${projectKey}" AND statusCategory != Done ORDER BY updated DESC`;
+  let jql = `assignee = currentUser() ORDER BY updated DESC`;
+  if (projectKey) jql = `assignee = currentUser() AND project = "${projectKey}" ORDER BY updated DESC`;
 
   try {
     const data = await jiraFetch<SearchResult>(config, `/search/jql`, {

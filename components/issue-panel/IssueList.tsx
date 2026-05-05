@@ -6,20 +6,27 @@ import { IssueCard } from "./IssueCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { SectionLabel } from "@/components/ui/section-label";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   activeIssueKey?: string;
   onStartTimer?: (issue: { key: string; fields: { summary: string } }) => void;
 }
 
+type StatusFilter = "all" | "active" | "done";
+
 export function IssueList({ activeIssueKey, onStartTimer }: Props) {
   const [search, setSearch] = useState("");
   const [selectedProject, setSelectedProject] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
 
   const { data: projects } = useProjects();
   const { data: issues, isLoading, isError } = useIssues(selectedProject || undefined);
 
-  const filtered = issues?.filter((issue: { key: string; fields: { summary: string } }) => {
+  const filtered = issues?.filter((issue: { key: string; fields: { summary: string; status: { statusCategory: { key: string } } } }) => {
+    const categoryKey = issue.fields.status.statusCategory.key;
+    if (statusFilter === "active" && categoryKey === "done") return false;
+    if (statusFilter === "done" && categoryKey !== "done") return false;
     if (!search) return true;
     const q = search.toLowerCase();
     return (
@@ -42,6 +49,21 @@ export function IssueList({ activeIssueKey, onStartTimer }: Props) {
               {filtered.length}
             </span>
           )}
+        </div>
+
+        <div className="flex gap-1 mb-2">
+          {(["active", "all", "done"] as StatusFilter[]).map((f) => (
+            <Button
+              key={f}
+              variant="toggle"
+              size="xs"
+              isActive={statusFilter === f}
+              className="flex-1"
+              onClick={() => setStatusFilter(f)}
+            >
+              {f}
+            </Button>
+          ))}
         </div>
 
         <Input

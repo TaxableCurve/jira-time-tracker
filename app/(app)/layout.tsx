@@ -13,7 +13,7 @@ import { FieldLabel } from "@/components/ui/section-label";
 import { Alert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/logo-mark";
-import { Settings, Bell } from "lucide-react";
+import { Settings, Bell, LogIn, Trash2 } from "lucide-react";
 import { useUpdateCheck } from "@/hooks/useUpdateCheck";
 
 function TimerBar() {
@@ -81,6 +81,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   });
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [confirmDisconnect, setConfirmDisconnect] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,25 +179,46 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
           {status === "error" && <Alert variant="error">⚠ {errorMsg}</Alert>}
           {status === "success" && <Alert variant="success">✓ Connected</Alert>}
 
-          <div className="flex gap-2 pt-2">
+          {!confirmDisconnect && (
+            <div className="flex gap-2 pt-2">
+              <Button
+                type="submit"
+                variant="primary"
+                className="flex-1"
+                disabled={status === "loading" || status === "success"}
+              >
+                {status === "loading" ? "Saving..." : <><LogIn size={14} />Save</>}
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                className="px-3"
+                onClick={() => setConfirmDisconnect(true)}
+              >
+                Disconnect
+              </Button>
+            </div>
+          )}
+        </form>
+
+        {confirmDisconnect && (
+          <div className="flex gap-2 mt-5">
             <Button
-              type="submit"
-              variant="primary"
-              className="flex-1 font-sans uppercase tracking-wider py-2"
-              disabled={status === "loading" || status === "success"}
+              variant="secondary"
+              className="flex-1"
+              onClick={() => setConfirmDisconnect(false)}
             >
-              {status === "loading" ? "Saving..." : "Save →"}
+              Cancel
             </Button>
             <Button
-              type="button"
-              variant="secondary"
-              className="px-3"
+              variant="destructive-solid"
+              className="flex-1"
               onClick={handleDisconnect}
             >
-              Disconnect
+              <Trash2 size={14} />Disconnect
             </Button>
           </div>
-        </form>
+        )}
       </div>
     </div>
   );
