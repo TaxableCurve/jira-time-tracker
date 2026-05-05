@@ -50,8 +50,7 @@ export function HoursByProject({ worklogs }: Props) {
     <Card className="p-4">
       <SectionLabel as="h2" className="mb-4">Hours by task</SectionLabel>
 
-      <div style={{ height: 160 }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={160} minWidth={0}>
           <PieChart>
             <Pie data={data} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={2} dataKey="hours">
               {data.map((entry) => (
@@ -65,10 +64,9 @@ export function HoursByProject({ worklogs }: Props) {
               itemStyle={{ color: "#B0B0B8" }}
             />
           </PieChart>
-        </ResponsiveContainer>
-      </div>
+      </ResponsiveContainer>
 
-      <div className="mt-3 space-y-3 max-h-56 overflow-y-auto pr-1">
+      <div className="mt-3 space-y-3 max-h-56 overflow-y-auto overflow-x-hidden pr-1">
         {data.map((entry) => {
           const estimate = entry.key !== "others" ? byIssue[entry.key]?.estimate ?? null : null;
           const pct = estimate ? Math.min(entry.seconds / estimate, 1) : null;
@@ -101,7 +99,7 @@ export function HoursByProject({ worklogs }: Props) {
                 </div>
               </div>
               {pct !== null && (
-                <div className="h-px w-full rounded-full overflow-hidden ml-4" style={{ background: "rgba(255,255,255,0.06)" }}>
+                <div className="h-0.5 w-full rounded-full overflow-hidden ml-4" style={{ background: "rgba(255,255,255,0.06)" }}>
                   <div
                     className="h-full rounded-full transition-all duration-300"
                     style={{ width: `${pct * 100}%`, background: barColor }}

@@ -10,13 +10,13 @@ const buttonVariants = cva(
         primary:
           "bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98]",
         secondary:
-          "bg-white/5 text-muted-foreground border border-white/7 hover:bg-white/8 hover:text-foreground",
+          "bg-white/5 text-muted-foreground border border-white/7 hover:bg-white/8 hover:text-foreground active:scale-[0.98]",
         destructive:
           "bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/15",
         "destructive-solid":
           "bg-destructive text-white font-semibold hover:bg-destructive/90",
         ghost:
-          "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/8",
+          "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/8 active:scale-[0.98]",
         toggle:
           "uppercase tracking-[0.12em] border bg-white/4 text-muted-foreground border-white/7 data-[active=true]:bg-primary/12 data-[active=true]:text-primary data-[active=true]:border-primary/25",
       },

@@ -13,6 +13,7 @@ import { FieldLabel } from "@/components/ui/section-label";
 import { Alert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/logo-mark";
+import { Settings } from "lucide-react";
 
 function TimerBar() {
   const { issueKey, issueName, startTime, isRunning, stop } = useTimerStore();
@@ -47,8 +48,10 @@ function TimerBar() {
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-primary" />
         <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
       </span>
-      <span className="font-sans text-xs flex-1 truncate text-[#B0B0B8]">
-        {issueKey} — {issueName}
+      <span className="font-sans text-xs flex-1 truncate text-[#D4D4D0]">
+        <span className="text-primary font-medium">{issueKey}</span>
+        <span className="text-white/30 mx-1.5">—</span>
+        {issueName}
       </span>
       <span className="font-mono text-sm tabular-nums font-medium text-primary">
         {secondsToTimer(elapsed)}
@@ -132,7 +135,11 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
       >
         <div className="flex items-center justify-between mb-6">
           <span className="font-sans text-sm font-bold text-foreground">Credentials</span>
-          <Button variant="ghost" size="icon-xs" onClick={onClose}>✕</Button>
+          <Button variant="ghost" size="icon-xs" onClick={onClose} aria-label="Close">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+              <path d="M1 1L9 9M9 1L1 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -201,13 +208,19 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center font-mono text-[10px] uppercase tracking-[0.12em] px-3 py-1.5 rounded transition-all border",
+        "relative inline-flex items-center font-mono text-[10px] uppercase tracking-[0.12em] px-3 py-1.5 transition-colors duration-150",
         isActive
-          ? "bg-primary/12 text-primary border-primary/25"
-          : "bg-white/4 text-muted-foreground border-white/7 hover:bg-white/8 hover:text-foreground"
+          ? "text-foreground"
+          : "text-muted-foreground hover:text-foreground/70"
       )}
     >
       {children}
+      {isActive && (
+        <span
+          className="absolute bottom-0 left-3 right-3 h-px rounded-full"
+          style={{ background: "#E87C2E" }}
+        />
+      )}
     </Link>
   );
 }
@@ -222,22 +235,31 @@ function AppShell({ children }: { children: React.ReactNode }) {
       <TimerBar />
 
       {/* Top nav */}
-      <div className="flex items-center gap-1 px-3 py-2 border-b border-white/6">
-        <div className="flex items-center gap-2 mr-4">
-          <LogoMark size={22} />
-          <span className="font-sans text-xs font-bold text-foreground">Time Tracker</span>
+      <div className="flex items-center gap-1 px-3 py-2.5 border-b border-white/6">
+        <div className="flex items-center gap-2">
+          <LogoMark size={20} />
+          <span className="font-sans text-[13px] font-semibold tracking-tight text-foreground">Time Tracker</span>
         </div>
+        <span className="w-px h-4 mx-3 bg-white/10 flex-shrink-0" />
         <NavLink href="/calendar">Calendar</NavLink>
         <NavLink href="/reports">Reports</NavLink>
-        <div className="ml-auto">
-          <Button variant="ghost" size="xs" onClick={() => setShowSettings(true)}>
-            Settings
-          </Button>
-        </div>
+        <button
+          className="ml-auto p-1.5 rounded text-white/50 hover:text-white/80 transition-colors duration-150 cursor-pointer"
+          onClick={() => setShowSettings(true)}
+          aria-label="Settings"
+        >
+          <Settings size={14} strokeWidth={1.5} />
+        </button>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-64 flex-shrink-0 flex flex-col overflow-hidden border-r border-white/6">
+        <aside
+          className="w-64 flex-shrink-0 flex flex-col overflow-hidden"
+          style={{
+            background: "#0F0F12",
+            boxShadow: "inset -1px 0 0 rgba(255,255,255,0.06), 4px 0 16px rgba(0,0,0,0.35)",
+          }}
+        >
           <IssueList
             activeIssueKey={activeKey ?? undefined}
             onStartTimer={(issue) => start(issue.key, issue.fields.summary)}

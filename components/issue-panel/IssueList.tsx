@@ -31,8 +31,18 @@ export function IssueList({ activeIssueKey, onStartTimer }: Props) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-3 pt-4 pb-3 border-b border-white/6">
-        <SectionLabel as="h2" className="mb-3 tracking-[0.2em]">My Issues</SectionLabel>
+      <div className="px-3 pt-3 pb-2 border-b border-white/8" style={{ background: "rgba(255,255,255,0.015)" }}>
+        <div className="flex items-center justify-between mb-3">
+          <SectionLabel as="h2" className="tracking-[0.2em]">My Issues</SectionLabel>
+          {filtered !== undefined && (
+            <span
+              className="font-mono text-[10px] tabular-nums px-1.5 py-0.5 rounded"
+              style={{ background: "rgba(232,124,46,0.1)", color: "#E87C2E", border: "1px solid rgba(232,124,46,0.2)" }}
+            >
+              {filtered.length}
+            </span>
+          )}
+        </div>
 
         <Input
           placeholder="Search..."
@@ -64,7 +74,7 @@ export function IssueList({ activeIssueKey, onStartTimer }: Props) {
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto divide-y divide-white/[0.04]">
         {isLoading && (
           <div className="flex flex-col gap-2 p-3">
             {[...Array(5)].map((_, i) => (
@@ -95,12 +105,6 @@ export function IssueList({ activeIssueKey, onStartTimer }: Props) {
         ))}
       </div>
 
-      {/* Footer count */}
-      {filtered && (
-        <div className="px-3 py-2 border-t border-white/6 font-mono text-[10px] text-[#767680]">
-          {filtered.length} issue{filtered.length !== 1 ? "s" : ""}
-        </div>
-      )}
     </div>
   );
 }

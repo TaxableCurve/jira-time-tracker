@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { ReportFilters, getRangeFromPreset, type RangePreset, type DateRange } from "@/components/reports/ReportFilters";
 import { SummaryCards } from "@/components/reports/SummaryCards";
@@ -8,12 +8,13 @@ import { ConsistencyStreak } from "@/components/reports/ConsistencyStreak";
 import { EstimateAccuracy } from "@/components/reports/EstimateAccuracy";
 import { useWorklogRange } from "@/hooks/useWorklogs";
 
-const HoursByDay = dynamic(() => import("@/components/reports/HoursByDay").then((m) => m.HoursByDay));
-const HoursByProject = dynamic(() => import("@/components/reports/HoursByProject").then((m) => m.HoursByProject));
-const HoursByProjectGroup = dynamic(() => import("@/components/reports/HoursByProjectGroup").then((m) => m.HoursByProjectGroup));
-const HoursHeatmap = dynamic(() => import("@/components/reports/HoursHeatmap").then((m) => m.HoursHeatmap));
+const HoursByDay = dynamic(() => import("@/components/reports/HoursByDay").then((m) => m.HoursByDay), { ssr: false });
+const HoursByProject = dynamic(() => import("@/components/reports/HoursByProject").then((m) => m.HoursByProject), { ssr: false });
+const HoursByProjectGroup = dynamic(() => import("@/components/reports/HoursByProjectGroup").then((m) => m.HoursByProjectGroup), { ssr: false });
+const HoursHeatmap = dynamic(() => import("@/components/reports/HoursHeatmap").then((m) => m.HoursHeatmap), { ssr: false });
 
 export default function ReportsPage() {
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   const [preset, setPreset] = useState<RangePreset>("this-month");
   const [range, setRange] = useState<DateRange>(getRangeFromPreset("this-month"));
 
@@ -29,7 +30,7 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-xl font-700 leading-none" style={{ fontFamily: "var(--font-syne)" }}>
+          <h1 className="text-xl font-bold leading-none" style={{ fontFamily: "var(--font-syne)" }}>
             Reports
           </h1>
           <p className="text-xs mt-1" style={{ fontFamily: "var(--font-jetbrains)", color: "#6B6B72" }}>
@@ -37,7 +38,7 @@ export default function ReportsPage() {
           </p>
         </div>
 
-        {isLoading && (
+        {mounted && isLoading && (
           <span className="text-[10px] animate-pulse" style={{ fontFamily: "var(--font-jetbrains)", color: "#E87C2E" }}>
             Loading...
           </span>

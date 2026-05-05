@@ -81,11 +81,11 @@ export function CalendarView() {
     const color = projectColor(wl.projectKey);
     return {
       id: wl.id,
-      title: `${wl.issueKey} · ${secondsToHuman(wl.timeSpentSeconds)}`,
+      title: wl.issueKey,
       start: wl.start,
       end: wl.end,
-      backgroundColor: `${color}30`,
-      borderColor: color,
+      backgroundColor: `${color}18`,
+      borderColor: `${color}60`,
       textColor: "#E8E8E4",
       extendedProps: wl,
     };
@@ -197,10 +197,13 @@ export function CalendarView() {
         .fc-button-active, .fc-button:focus { background: rgba(232,124,46,0.15) !important; border-color: rgba(232,124,46,0.3) !important; color: #E87C2E !important; box-shadow: none !important; }
         .fc-toolbar-title { font-family: var(--font-syne) !important; font-size: 14px !important; font-weight: 700 !important; color: #E8E8E4 !important; }
         .fc-highlight { background: rgba(232,124,46,0.08) !important; }
+        .fc-event-mirror { background-color: rgba(232,124,46,0.12) !important; border-color: rgba(232,124,46,0.5) !important; }
         .fc-timegrid-now-indicator-line { border-color: #E87C2E !important; }
         .fc-timegrid-now-indicator-arrow { border-color: #E87C2E !important; border-top-color: transparent !important; border-bottom-color: transparent !important; }
-        .fc-event { cursor: pointer !important; border-radius: 3px !important; border-left-width: 2px !important; }
+        .fc-event { cursor: pointer !important; border-radius: 4px !important; border-left-width: 3px !important; border-top-width: 0 !important; border-right-width: 0 !important; border-bottom-width: 0 !important; padding: 0 !important; transition: filter 150ms ease, transform 150ms ease !important; }
+        .fc-event:hover { filter: brightness(1.15) !important; }
         .fc-event-title { font-family: var(--font-jetbrains) !important; font-size: 10px !important; font-weight: 500 !important; }
+        .fc-timegrid-event .fc-event-main { padding: 0 !important; }
         .fc-daygrid-event-dot { display: none !important; }
         .fc-scrollgrid-sync-inner { background: transparent !important; }
         .fc-timegrid-col { background: transparent !important; }
@@ -212,7 +215,7 @@ export function CalendarView() {
         .fc-bg-event .fc-event-title { font-family: var(--font-jetbrains) !important; font-size: 9px !important; color: rgba(160,160,230,0.8) !important; padding: 2px 4px !important; text-transform: uppercase !important; letter-spacing: 0.06em !important; }
       `}</style>
 
-      <div className="flex-1 overflow-hidden px-2 pb-2">
+      <div className={`flex-1 overflow-hidden px-2 pb-2 transition-opacity duration-300 ${isLoading ? "opacity-50" : "opacity-100"}`}>
         <FullCalendar
           ref={calRef}
           plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
@@ -241,6 +244,7 @@ export function CalendarView() {
           slotMinTime="07:00:00"
           slotMaxTime="22:00:00"
           slotDuration="00:30:00"
+          snapDuration="00:05:00"
           height="100%"
           dayCellContent={(arg) => {
             const key = arg.date.toISOString().slice(0, 10);
@@ -300,8 +304,9 @@ export function CalendarView() {
                 const secs = Math.round((end.getTime() - start.getTime()) / 1000);
                 const fmt = (d: Date) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: false });
                 return (
-                  <div style={{ fontFamily: "var(--font-jetbrains)", fontSize: 10, padding: "2px 4px", color: "#E8E8E4" }}>
-                    {fmt(start)} → {fmt(end)} · {secondsToHuman(secs)}
+                  <div style={{ fontFamily: "var(--font-jetbrains)", fontSize: 10, padding: "4px 8px", color: "#E8E8E4", display: "flex", flexDirection: "column", gap: 2 }}>
+                    <span style={{ color: "#E87C2E", fontWeight: 500 }}>{secondsToHuman(secs)}</span>
+                    <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 9 }}>{fmt(start)} → {fmt(end)}</span>
                   </div>
                 );
               }
@@ -309,17 +314,18 @@ export function CalendarView() {
 
             if (arg.event.extendedProps.isHoliday) return null;
 
+            const wl = arg.event.extendedProps as WorklogEvent;
+            const color = projectColor(wl.projectKey);
             const view = arg.view.type;
+
             if (view === "dayGridMonth") {
-              const wl = arg.event.extendedProps as WorklogEvent;
-              const color = projectColor(wl.projectKey);
               return (
                 <div
                   className="px-1.5 py-0.5 rounded text-[10px] truncate w-full"
                   style={{
                     fontFamily: "var(--font-jetbrains)",
-                    background: `${color}25`,
-                    borderLeft: `2px solid ${color}`,
+                    background: `${color}20`,
+                    borderLeft: `3px solid ${color}`,
                     color: "#E8E8E4",
                   }}
                 >
@@ -327,7 +333,50 @@ export function CalendarView() {
                 </div>
               );
             }
-            return true;
+
+            // timeGridDay / timeGridWeek — custom block
+            const durationMins = Math.round(wl.timeSpentSeconds / 60);
+            const isShort = durationMins < 45;
+            return (
+              <div
+                className="h-full w-full flex flex-col px-2 py-1.5 overflow-hidden"
+                style={{ gap: isShort ? 0 : 3 }}
+              >
+                <span
+                  className="font-medium truncate leading-none"
+                  style={{
+                    fontFamily: "var(--font-jetbrains)",
+                    fontSize: 10,
+                    color,
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  {wl.issueKey}
+                </span>
+                {!isShort && (
+                  <span
+                    className="truncate leading-none opacity-75"
+                    style={{
+                      fontFamily: "var(--font-jetbrains)",
+                      fontSize: 9,
+                      color: "#D4D4D0",
+                    }}
+                  >
+                    {wl.issueName}
+                  </span>
+                )}
+                <span
+                  className="leading-none mt-auto"
+                  style={{
+                    fontFamily: "var(--font-jetbrains)",
+                    fontSize: 9,
+                    color: "rgba(255,255,255,0.4)",
+                  }}
+                >
+                  {secondsToHuman(wl.timeSpentSeconds)}
+                </span>
+              </div>
+            );
           }}
         />
       </div>

@@ -44,37 +44,25 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
 
   return (
     <div
-      className="group relative px-3 py-2.5 transition-all duration-150 cursor-pointer"
-      style={{
-        borderLeft: `2px solid ${isTimerActive ? "#E87C2E" : "transparent"}`,
-        background: isTimerActive ? "rgba(232,124,46,0.05)" : "transparent",
-      }}
-      onMouseEnter={(e) => {
-        if (!isTimerActive) {
-          (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.03)";
-          (e.currentTarget as HTMLDivElement).style.borderLeftColor = "rgba(255,255,255,0.1)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isTimerActive) {
-          (e.currentTarget as HTMLDivElement).style.background = "transparent";
-          (e.currentTarget as HTMLDivElement).style.borderLeftColor = "transparent";
-        }
-      }}
+      className={`group relative px-3 py-2.5 transition-all duration-200 cursor-pointer border-l-2 ${
+        isTimerActive
+          ? "border-primary bg-primary/5"
+          : "border-transparent hover:border-white/10 hover:bg-white/[0.025]"
+      }`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           {/* Key + status */}
-          <div className="flex items-center gap-1.5 mb-1">
+          <div className="flex items-center gap-1.5 mb-1.5">
             <Badge color={color}>{issue.key}</Badge>
-            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: statusColor }} />
-            <span className="font-mono text-[10px] truncate text-[#9A9AA4]">
+            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: statusColor }} />
+            <span className="font-mono text-[10px] truncate text-[#7A7A84]">
               {issue.fields.status.name}
             </span>
           </div>
 
           {/* Title */}
-          <p className="font-sans text-xs leading-snug line-clamp-2 text-[#B0B0B8]">
+          <p className="font-sans text-xs leading-snug line-clamp-2 text-[#D4D4D0]">
             {issue.fields.summary}
           </p>
 
@@ -98,7 +86,7 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
                 const over = spent > estimate;
                 const barColor = over ? "#DE4E4E" : pct >= 0.8 ? "#E8B42E" : "#7ADE9A";
                 return (
-                  <div className="h-px w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  <div className="h-0.5 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
                     <div
                       className="h-full rounded-full transition-all duration-300"
                       style={{ width: `${pct * 100}%`, background: barColor }}
@@ -117,7 +105,7 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
               e.stopPropagation();
               onStartTimer(issue);
             }}
-            className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150 size-6 flex items-center justify-center rounded"
+            className={`flex-shrink-0 transition-all duration-150 size-6 flex items-center justify-center rounded ${isTimerActive ? "opacity-100" : "opacity-0 group-hover:opacity-80"}`}
             style={{
               background: isTimerActive ? "rgba(232,124,46,0.2)" : "rgba(255,255,255,0.06)",
               color: isTimerActive ? "#E87C2E" : "#9A9AA4",

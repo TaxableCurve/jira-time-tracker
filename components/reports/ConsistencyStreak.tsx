@@ -134,7 +134,6 @@ export function ConsistencyStreak({ worklogs, from, to }: Props) {
                 height: 8,
                 borderRadius: 2,
                 background: bg,
-                border: isToday ? "1px solid rgba(232,124,46,0.8)" : "1px solid transparent",
               }}
             />
           );
