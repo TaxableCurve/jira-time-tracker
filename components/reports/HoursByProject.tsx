@@ -6,7 +6,7 @@ import { WorklogEvent } from "@/hooks/useWorklogs";
 import { Card } from "@/components/ui/card";
 import { SectionLabel } from "@/components/ui/section-label";
 
-const PALETTE = ["#E87C2E", "#4EA8DE", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
+const PALETTE = ["#06B6D4", "#F59E0B", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
 
 interface Props {
   worklogs: WorklogEvent[];

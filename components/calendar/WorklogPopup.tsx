@@ -18,7 +18,7 @@ interface Props {
 }
 
 const PROJECT_COLORS: Record<string, string> = {};
-const PALETTE = ["#E87C2E", "#4EA8DE", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
+const PALETTE = ["#06B6D4", "#F59E0B", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
 function projectColor(key: string): string {
   if (!PROJECT_COLORS[key]) {
     const idx = Object.keys(PROJECT_COLORS).length % PALETTE.length;

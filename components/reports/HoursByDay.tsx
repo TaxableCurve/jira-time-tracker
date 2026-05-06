@@ -5,7 +5,7 @@ import { eachDayOfInterval, format } from "date-fns";
 import { secondsToHuman } from "@/lib/format";
 import { WorklogEvent } from "@/hooks/useWorklogs";
 
-const PALETTE = ["#E87C2E", "#4EA8DE", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
+const PALETTE = ["#06B6D4", "#F59E0B", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
 const PROJECT_COLORS: Record<string, string> = {};
 function projectColor(key: string): string {
   if (!PROJECT_COLORS[key]) {

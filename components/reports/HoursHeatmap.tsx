@@ -15,7 +15,7 @@ function intensityColor(seconds: number): string {
   if (seconds === 0) return "rgba(255,255,255,0.06)";
   const ratio = Math.min(seconds / (MAX_HOURS * 3600), 1);
   const opacity = 0.2 + ratio * 0.8;
-  return `rgba(232,124,46,${opacity.toFixed(2)})`;
+  return `rgba(6,182,212,${opacity.toFixed(2)})`;
 }
 
 interface Props {
@@ -150,7 +150,7 @@ export function HoursHeatmap({ worklogs, from, to }: Props) {
                           : holidayName && seconds === 0
                           ? "rgba(120,120,200,0.35)"
                           : intensityColor(seconds),
-                        border: isToday ? "1px solid rgba(232,124,46,0.8)" : holidayName ? "1px solid rgba(120,120,200,0.5)" : "1px solid transparent",
+                        border: isToday ? "1px solid rgba(6,182,212,0.8)" : holidayName ? "1px solid rgba(120,120,200,0.5)" : "1px solid transparent",
                         cursor: seconds > 0 || holidayName ? "pointer" : "default",
                       }}
                       onMouseEnter={(e) => {

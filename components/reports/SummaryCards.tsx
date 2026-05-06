@@ -22,7 +22,7 @@ export function SummaryCards({ worklogs }: Props) {
   const avgPerDay = days > 0 ? totalSeconds / days : 0;
 
   const cards = [
-    { label: "Total hours", value: secondsToHuman(totalSeconds), sub: `${worklogs.length} worklogs`, accent: "#E87C2E" },
+    { label: "Total hours", value: secondsToHuman(totalSeconds), sub: `${worklogs.length} worklogs`, accent: "#06B6D4" },
     { label: "Days worked", value: String(days), sub: `avg ${secondsToHuman(Math.round(avgPerDay))} / day`, accent: "#4EA8DE" },
     { label: "Top task", value: topIssue?.[0] ?? "—", sub: topIssue ? secondsToHuman(topIssue[1]) : "", accent: "#9B7ADE" },
     { label: "Tasks", value: String(Object.keys(byIssue).length), sub: "worked this period", accent: "#7ADE9A" },

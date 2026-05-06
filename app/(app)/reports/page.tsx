@@ -39,7 +39,7 @@ export default function ReportsPage() {
         </div>
 
         {mounted && isLoading && (
-          <span className="text-[10px] animate-pulse" style={{ fontFamily: "var(--font-jetbrains)", color: "#E87C2E" }}>
+          <span className="text-[10px] animate-pulse" style={{ fontFamily: "var(--font-jetbrains)", color: "#06B6D4" }}>
             Loading...
           </span>
         )}

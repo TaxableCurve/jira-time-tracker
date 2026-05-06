@@ -15,7 +15,7 @@ import { WorklogDetailPopup } from "./WorklogDetailPopup";
 import { secondsToHuman } from "@/lib/format";
 
 const PROJECT_COLORS: Record<string, string> = {};
-const PALETTE = ["#E87C2E", "#4EA8DE", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
+const PALETTE = ["#06B6D4", "#F59E0B", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
 function projectColor(key: string): string {
   if (!PROJECT_COLORS[key]) {
     const idx = Object.keys(PROJECT_COLORS).length % PALETTE.length;
@@ -179,7 +179,7 @@ export function CalendarView() {
       {mounted && (isLoading || createWorklog.isPending || updateWorklog.isPending) && (
         <div
           className="absolute top-0 left-0 right-0 h-0.5 z-10"
-          style={{ background: "linear-gradient(90deg, transparent, #E87C2E, transparent)", animation: "slideX 1.2s ease-in-out infinite" }}
+          style={{ background: "linear-gradient(90deg, transparent, #06B6D4, transparent)", animation: "slideX 1.2s ease-in-out infinite" }}
         />
       )}
 
@@ -194,14 +194,14 @@ export function CalendarView() {
         .fc-timegrid-slot-label-cushion { color: #767680 !important; font-family: var(--font-jetbrains); font-size: 10px; }
         .fc-button { background: rgba(255,255,255,0.06) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: #B0B0B8 !important; font-family: var(--font-jetbrains) !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 0.08em !important; border-radius: 3px !important; padding: 4px 10px !important; cursor: pointer !important; }
         .fc-button:hover { background: rgba(255,255,255,0.1) !important; color: #E8E8E4 !important; }
-        .fc-button-active, .fc-button:focus { background: rgba(232,124,46,0.15) !important; border-color: rgba(232,124,46,0.3) !important; color: #E87C2E !important; box-shadow: none !important; }
+        .fc-button-active, .fc-button:focus { background: rgba(6,182,212,0.15) !important; border-color: rgba(6,182,212,0.3) !important; color: #06B6D4 !important; box-shadow: none !important; }
         .fc-button-group .fc-button { margin-left: 4px !important; }
         .fc-button-group .fc-button:first-child { margin-left: 0 !important; }
         .fc-toolbar-title { font-family: var(--font-syne) !important; font-size: 14px !important; font-weight: 700 !important; color: #E8E8E4 !important; }
-        .fc-highlight { background: rgba(232,124,46,0.08) !important; }
-        .fc-event-mirror { background-color: rgba(232,124,46,0.12) !important; border-color: rgba(232,124,46,0.5) !important; }
-        .fc-timegrid-now-indicator-line { border-color: #E87C2E !important; }
-        .fc-timegrid-now-indicator-arrow { border-color: #E87C2E !important; border-top-color: transparent !important; border-bottom-color: transparent !important; }
+        .fc-highlight { background: rgba(6,182,212,0.08) !important; }
+        .fc-event-mirror { background-color: rgba(6,182,212,0.12) !important; border-color: rgba(6,182,212,0.5) !important; }
+        .fc-timegrid-now-indicator-line { border-color: #06B6D4 !important; }
+        .fc-timegrid-now-indicator-arrow { border-color: #06B6D4 !important; border-top-color: transparent !important; border-bottom-color: transparent !important; }
         .fc-event { cursor: pointer !important; border-radius: 4px !important; border-left-width: 3px !important; border-top-width: 0 !important; border-right-width: 0 !important; border-bottom-width: 0 !important; padding: 0 !important; transition: filter 150ms ease, transform 150ms ease !important; }
         .fc-event:hover { filter: brightness(1.15) !important; }
         .fc-event-title { font-family: var(--font-jetbrains) !important; font-size: 10px !important; font-weight: 500 !important; }
@@ -209,7 +209,7 @@ export function CalendarView() {
         .fc-daygrid-event-dot { display: none !important; }
         .fc-scrollgrid-sync-inner { background: transparent !important; }
         .fc-timegrid-col { background: transparent !important; }
-        .fc-day-today { background: rgba(232,124,46,0.02) !important; }
+        .fc-day-today { background: rgba(6,182,212,0.02) !important; }
         .fc-toolbar { padding: 12px 16px !important; }
         .fc-daygrid-day-frame { min-height: 80px !important; }
         .fc-event-resizer { opacity: 0.6; }
@@ -283,9 +283,9 @@ export function CalendarView() {
                     style={{
                       fontFamily: "var(--font-jetbrains)",
                       fontSize: 9,
-                      color: "#E87C2E",
-                      background: "rgba(232,124,46,0.12)",
-                      border: "1px solid rgba(232,124,46,0.2)",
+                      color: "#06B6D4",
+                      background: "rgba(6,182,212,0.12)",
+                      border: "1px solid rgba(6,182,212,0.2)",
                       borderRadius: 3,
                       padding: "1px 5px",
                       letterSpacing: "0.05em",
@@ -307,7 +307,7 @@ export function CalendarView() {
                 const fmt = (d: Date) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: false });
                 return (
                   <div style={{ fontFamily: "var(--font-jetbrains)", fontSize: 10, padding: "4px 8px", color: "#E8E8E4", display: "flex", flexDirection: "column", gap: 2 }}>
-                    <span style={{ color: "#E87C2E", fontWeight: 500 }}>{secondsToHuman(secs)}</span>
+                    <span style={{ color: "#06B6D4", fontWeight: 500 }}>{secondsToHuman(secs)}</span>
                     <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 9 }}>{fmt(start)} → {fmt(end)}</span>
                   </div>
                 );

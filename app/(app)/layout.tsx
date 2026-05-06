@@ -43,7 +43,7 @@ function TimerBar() {
   return (
     <div
       className="flex items-center gap-3 px-3 py-1.5"
-      style={{ background: "rgba(232,124,46,0.08)", borderBottom: "1px solid rgba(232,124,46,0.15)" }}
+      style={{ background: "rgba(6,182,212,0.08)", borderBottom: "1px solid rgba(6,182,212,0.15)" }}
     >
       <span className="relative flex h-2 w-2">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-primary" />
@@ -241,7 +241,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
       {isActive && (
         <span
           className="absolute bottom-0 left-3 right-3 h-px rounded-full"
-          style={{ background: "#E87C2E" }}
+          style={{ background: "#06B6D4" }}
         />
       )}
     </Link>

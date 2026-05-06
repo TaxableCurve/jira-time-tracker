@@ -18,7 +18,7 @@ interface Issue {
 }
 
 const PROJECT_COLORS: Record<string, string> = {};
-const PALETTE = ["#E87C2E", "#4EA8DE", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
+const PALETTE = ["#06B6D4", "#F59E0B", "#7ADE9A", "#E8B42E", "#DE7AAE", "#9B7ADE", "#DE4E4E"];
 
 function projectColor(key: string): string {
   if (!PROJECT_COLORS[key]) {
@@ -167,8 +167,8 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
             }}
             className={`flex-shrink-0 transition-all duration-150 size-6 flex items-center justify-center rounded ${isTimerActive ? "opacity-100" : "opacity-0 group-hover:opacity-80"}`}
             style={{
-              background: isTimerActive ? "rgba(232,124,46,0.2)" : "rgba(255,255,255,0.06)",
-              color: isTimerActive ? "#E87C2E" : "#9A9AA4",
+              background: isTimerActive ? "rgba(6,182,212,0.2)" : "rgba(255,255,255,0.06)",
+              color: isTimerActive ? "#06B6D4" : "#9A9AA4",
             }}
             aria-label={isTimerActive ? `Stop timer for ${issue.key}` : `Start timer for ${issue.key}`}
             title={isTimerActive ? "Stop timer" : "Start timer"}

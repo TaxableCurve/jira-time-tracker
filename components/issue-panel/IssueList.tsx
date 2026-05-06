@@ -41,7 +41,7 @@ export function IssueList({ activeIssueKey, onStartTimer }: Props) {
           {filtered !== undefined && (
             <span
               className="font-mono text-[10px] tabular-nums px-1.5 py-0.5 rounded"
-              style={{ background: "rgba(232,124,46,0.1)", color: "#E87C2E", border: "1px solid rgba(232,124,46,0.2)" }}
+              style={{ background: "rgba(6,182,212,0.1)", color: "#06B6D4", border: "1px solid rgba(6,182,212,0.2)" }}
             >
               {filtered.length}
             </span>
