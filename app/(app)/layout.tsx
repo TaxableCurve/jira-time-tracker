@@ -13,7 +13,7 @@ import { FieldLabel } from "@/components/ui/section-label";
 import { Alert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/logo-mark";
-import { Settings, Bell, LogIn, Trash2 } from "lucide-react";
+import { Settings, Bell, LogIn, LogOut } from "lucide-react";
 import { useUpdateCheck } from "@/hooks/useUpdateCheck";
 
 function TimerBar() {
@@ -215,7 +215,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
               className="flex-1"
               onClick={handleDisconnect}
             >
-              <Trash2 size={14} />Disconnect
+              <LogOut size={14} />Disconnect
             </Button>
           </div>
         )}

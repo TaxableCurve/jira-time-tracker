@@ -5,9 +5,9 @@ import { useIssues, useIssueSearch } from "@/hooks/useJira";
 import { secondsToHuman } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge, TimeBadge } from "@/components/ui/badge";
+import { TimeBadge } from "@/components/ui/badge";
 import { PopupContainer } from "@/components/ui/popup-container";
-import { LogIn } from "lucide-react";
+import { Clock } from "lucide-react";
 
 interface Props {
   start: Date;
@@ -98,18 +98,22 @@ export function WorklogPopup({ start, end, position, onConfirm, onCancel }: Prop
           const isSelected = selected?.key === issue.key;
           const color = projectColor(issue.fields.project.key);
           return (
-            <Button
+            <button
               key={issue.id}
-              variant="toggle"
-              isActive={isSelected}
               onClick={() => setSelected({ key: issue.key, summary: issue.fields.summary })}
-              className="w-full justify-start px-2.5 py-2"
+              className={`w-full text-left px-2.5 py-1.5 rounded transition-all cursor-pointer outline-none ${
+                isSelected
+                  ? "bg-primary/12 border border-primary/40"
+                  : "border border-transparent hover:bg-white/5 hover:border-white/7"
+              }`}
             >
-              <Badge color={color}>{issue.key}</Badge>
-              <span className="font-sans text-xs truncate">
+              <div className="font-mono text-[10px] mb-0.5" style={{ color }}>
+                {issue.key}
+              </div>
+              <div className="font-sans text-xs text-foreground/80 truncate">
                 {issue.fields.summary}
-              </span>
-            </Button>
+              </div>
+            </button>
           );
         })}
       </div>
@@ -125,7 +129,7 @@ export function WorklogPopup({ start, end, position, onConfirm, onCancel }: Prop
           disabled={!selected}
           onClick={() => selected && onConfirm(selected.key, selected.summary, durationSeconds, start.toISOString())}
         >
-          <LogIn size={14} />Log
+          <Clock size={14} />Log
         </Button>
       </div>
     </PopupContainer>

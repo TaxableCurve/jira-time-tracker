@@ -113,7 +113,6 @@ export function ConsistencyStreak({ worklogs, from, to }: Props) {
           const key = format(day, "yyyy-MM-dd");
           const isHoliday = holidays.has(key);
           const logged = loggedDays.has(key);
-          const isToday = key === todayStr;
           const holidayName = isHoliday
             ? hd.isHoliday(new Date(key + "T12:00:00"))
             : null;
