@@ -11,6 +11,7 @@ interface JiraIssue {
     timeoriginalestimate: number | null;
     timespent: number | null;
     assignee: { accountId: string } | null;
+    issuetype: { name: string };
   };
 }
 
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
       body: JSON.stringify({
         jql,
         maxResults: 50,
-        fields: ["summary", "status", "project", "timeoriginalestimate", "timespent", "assignee"],
+        fields: ["summary", "status", "project", "timeoriginalestimate", "timespent", "assignee", "issuetype"],
       }),
     });
     return NextResponse.json(data.issues);
