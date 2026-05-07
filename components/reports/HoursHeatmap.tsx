@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { eachDayOfInterval, format, getDay, getYear, startOfWeek } from "date-fns";
+import { format, getDay, getYear, getDaysInMonth } from "date-fns";
 import Holidays from "date-holidays";
 import { secondsToHuman } from "@/lib/format";
 import { WorklogEvent } from "@/hooks/useWorklogs";
@@ -16,6 +16,37 @@ function intensityColor(seconds: number): string {
   const ratio = Math.min(seconds / (MAX_HOURS * 3600), 1);
   const opacity = 0.2 + ratio * 0.8;
   return `rgba(6,182,212,${opacity.toFixed(2)})`;
+}
+
+function getMonthsInRange(from: Date, to: Date): { year: number; month: number }[] {
+  const months: { year: number; month: number }[] = [];
+  let y = from.getFullYear(), m = from.getMonth();
+  const endY = to.getFullYear(), endM = to.getMonth();
+  while (y < endY || (y === endY && m <= endM)) {
+    months.push({ year: y, month: m });
+    m++;
+    if (m > 11) { m = 0; y++; }
+  }
+  return months;
+}
+
+function buildMonthGrid(year: number, month: number): (Date | null)[][] {
+  const firstDay = new Date(year, month, 1);
+  const startOffset = (getDay(firstDay) + 6) % 7;
+  const totalDays = getDaysInMonth(firstDay);
+
+  const cells: (Date | null)[] = [
+    ...Array(startOffset).fill(null),
+    ...Array.from({ length: totalDays }, (_, i) => new Date(year, month, i + 1)),
+  ];
+
+  const rows: (Date | null)[][] = [];
+  for (let i = 0; i < cells.length; i += 7) {
+    const row = cells.slice(i, i + 7);
+    while (row.length < 7) row.push(null);
+    rows.push(row);
+  }
+  return rows;
 }
 
 interface Props {
@@ -54,47 +85,21 @@ export function HoursHeatmap({ worklogs, from, to }: Props) {
     return acc;
   }, {});
 
-  const firstWeekStart = startOfWeek(from, { weekStartsOn: 1 });
-  const allDays = eachDayOfInterval({ start: firstWeekStart, end: to });
-
-  const weeks: (Date | null)[][] = [];
-  let week: (Date | null)[] = [];
-  allDays.forEach((day) => {
-    const dow = (getDay(day) + 6) % 7;
-    if (dow === 0 && week.length > 0) {
-      weeks.push(week);
-      week = [];
-    }
-    const inRange = day >= from && day <= to;
-    week.push(inRange ? day : null);
-  });
-  if (week.length > 0) weeks.push(week);
-
-  const monthLabels: { label: string; colIndex: number }[] = [];
-  weeks.forEach((w, i) => {
-    const firstDay = w.find((d) => d !== null);
-    if (firstDay && (i === 0 || format(firstDay, "MMM") !== monthLabels[monthLabels.length - 1]?.label)) {
-      monthLabels.push({ label: format(firstDay, "MMM"), colIndex: i });
-    }
-  });
-
-  const cellSize = 22;
-  const cellGap = 4;
-  const step = cellSize + cellGap;
+  const months = getMonthsInRange(from, to);
+  const multiMonth = months.length > 1;
 
   return (
-    <Card className="p-4">
+    <Card className="p-4 h-full flex flex-col">
       <div className="flex items-center justify-between gap-4 mb-4">
-        <SectionLabel as="h2">Hours heatmap</SectionLabel>
-        {/* Numeric scale legend */}
+        <SectionLabel as="h2">Hours calendar</SectionLabel>
         <div className="flex items-center gap-2">
           {([0, 2, 4, 6, 8] as const).map((h, i) => (
             <div key={h} className="flex items-center gap-1">
               <span
                 className="rounded-sm flex-shrink-0"
                 style={{
-                  width: 11,
-                  height: 11,
+                  width: 10,
+                  height: 10,
                   display: "inline-block",
                   background: i === 0 ? "rgba(255,255,255,0.06)" : intensityColor(h * 3600),
                 }}
@@ -105,78 +110,92 @@ export function HoursHeatmap({ worklogs, from, to }: Props) {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <div style={{ position: "relative", paddingLeft: 28, paddingTop: 20 }}>
-          {monthLabels.map(({ label, colIndex }) => (
-            <span
-              key={label}
-              className="font-mono text-[9px] text-muted-foreground absolute"
-              style={{ top: 2, left: 28 + colIndex * step }}
-            >
-              {label}
-            </span>
-          ))}
+      <div className={multiMonth ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" : "flex-1 flex flex-col"}>
+        {months.map(({ year, month }) => {
+          const rows = buildMonthGrid(year, month);
+          const monthLabel = format(new Date(year, month, 1), "MMMM yyyy");
 
-          {DAY_LABELS.map((d, i) => (
-            <span
-              key={d}
-              className="font-mono text-[9px] text-[#767680] absolute"
-              style={{ left: 0, top: 20 + i * step, lineHeight: `${cellSize}px` }}
-            >
-              {i % 2 === 0 ? d.slice(0, 1) : ""}
-            </span>
-          ))}
+          return (
+            <div key={`${year}-${month}`} className={multiMonth ? "" : "flex-1 flex flex-col"}>
+              {multiMonth && (
+                <p className="font-mono text-[10px] text-muted-foreground mb-2">{monthLabel}</p>
+              )}
+              <div
+                className="grid grid-cols-7 gap-1 flex-1"
+                style={{ gridTemplateRows: `auto repeat(${rows.length}, 1fr)` }}
+              >
+                {DAY_LABELS.map((d) => (
+                  <div key={d} className="text-center font-mono text-[9px] text-[#767680] pb-1">
+                    {d.slice(0, 1)}
+                  </div>
+                ))}
+                {rows.map((row, ri) =>
+                  row.map((day, di) => {
+                    if (!day) {
+                      return <div key={`${ri}-${di}`} />;
+                    }
+                    const key = format(day, "yyyy-MM-dd");
+                    const inRange = day >= from && day <= to;
+                    const data = inRange ? dayMap[key] : null;
+                    const seconds = data?.seconds ?? 0;
+                    const isToday = key === format(new Date(), "yyyy-MM-dd");
+                    const holidayName = inRange ? holidayMap.get(key) : undefined;
+                    const bg = !inRange
+                      ? "rgba(255,255,255,0.02)"
+                      : holidayName && seconds === 0
+                      ? "rgba(120,120,200,0.25)"
+                      : intensityColor(seconds);
 
-          <div style={{ display: "flex", gap: cellGap }}>
-            {weeks.map((week, wi) => (
-              <div key={wi} style={{ display: "flex", flexDirection: "column", gap: cellGap }}>
-                {Array.from({ length: 7 }).map((_, di) => {
-                  const day = week[di] ?? null;
-                  const key = day ? format(day, "yyyy-MM-dd") : null;
-                  const data = key ? dayMap[key] : null;
-                  const seconds = data?.seconds ?? 0;
-                  const isToday = day ? format(day, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd") : false;
-                  const holidayName = key ? holidayMap.get(key) : undefined;
-
-                  return (
-                    <div
-                      key={di}
-                      style={{
-                        width: cellSize,
-                        height: cellSize,
-                        borderRadius: 2,
-                        background: !day
-                          ? "rgba(255,255,255,0.02)"
-                          : holidayName && seconds === 0
-                          ? "rgba(120,120,200,0.35)"
-                          : intensityColor(seconds),
-                        border: isToday ? "1px solid rgba(6,182,212,0.8)" : holidayName ? "1px solid rgba(120,120,200,0.5)" : "1px solid transparent",
-                        cursor: seconds > 0 || holidayName ? "pointer" : "default",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!day || (!data && !holidayName)) return;
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        setTooltip({
-                          date: format(day, "EEE, MMM d yyyy"),
-                          seconds,
-                          holiday: holidayName,
-                          tasks: data
-                            ? Object.entries(data.tasks)
-                                .sort((a, b) => b[1].seconds - a[1].seconds)
-                                .map(([k, v]) => ({ key: k, name: v.name, seconds: v.seconds }))
-                            : [],
-                          x: rect.right + 8,
-                          y: rect.top,
-                        });
-                      }}
-                      onMouseLeave={() => setTooltip(null)}
-                    />
-                  );
-                })}
+                    return (
+                      <div
+                        key={`${ri}-${di}`}
+                        className="relative rounded flex items-end justify-end p-0.5 select-none h-full"
+                        style={{
+                          minHeight: 24,
+                          background: bg,
+                          border: isToday
+                            ? "1px solid rgba(6,182,212,0.8)"
+                            : holidayName
+                            ? "1px solid rgba(120,120,200,0.4)"
+                            : "1px solid transparent",
+                          cursor: inRange && (seconds > 0 || holidayName) ? "pointer" : "default",
+                          opacity: inRange ? 1 : 0.3,
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!inRange || (!data && !holidayName)) return;
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setTooltip({
+                            date: format(day, "EEE, MMM d yyyy"),
+                            seconds,
+                            holiday: holidayName,
+                            tasks: data
+                              ? Object.entries(data.tasks)
+                                  .sort((a, b) => b[1].seconds - a[1].seconds)
+                                  .map(([k, v]) => ({ key: k, name: v.name, seconds: v.seconds }))
+                              : [],
+                            x: rect.right + 8,
+                            y: rect.top,
+                          });
+                        }}
+                        onMouseLeave={() => setTooltip(null)}
+                      >
+                        <span
+                          className="font-mono leading-none"
+                          style={{
+                            fontSize: 9,
+                            color: seconds > 0 ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.25)",
+                          }}
+                        >
+                          {day.getDate()}
+                        </span>
+                      </div>
+                    );
+                  })
+                )}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          );
+        })}
       </div>
 
       {tooltip && (

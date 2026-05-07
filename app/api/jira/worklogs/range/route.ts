@@ -18,6 +18,7 @@ interface SearchResult {
       project: { key: string; name: string };
       timeoriginalestimate: number | null;
       timespent: number | null;
+      issuetype: { name: string };
     };
   }[];
 }
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         jql,
         maxResults: 100,
-        fields: ["summary", "project", "timeoriginalestimate", "timespent"],
+        fields: ["summary", "project", "timeoriginalestimate", "timespent", "issuetype"],
       }),
     });
 
@@ -78,6 +79,7 @@ export async function POST(req: NextRequest) {
           timeSpentSeconds: wl.timeSpentSeconds,
           originalEstimateSeconds: issue.fields.timeoriginalestimate,
           totalTimeSpentSeconds: issue.fields.timespent,
+          issueType: issue.fields.issuetype.name,
         }))
     );
 
