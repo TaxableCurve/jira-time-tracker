@@ -5,6 +5,7 @@
   "author": "TaxableCurve <diego.fdo.perez7@hotmail.com>",
   "license": "MIT",
   "private": true,
+  "main": "electron/dist/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,7 +13,10 @@
     "lint": "eslint",
     "release:patch": "npm version patch && git push && git push --tags",
     "release:minor": "npm version minor && git push && git push --tags",
-    "release:major": "npm version major && git push && git push --tags"
+    "release:major": "npm version major && git push && git push --tags",
+    "electron:dev": "tsc -p tsconfig.electron.json && concurrently \"next dev\" \"wait-on http://localhost:3000/api/health && electron .\"",
+    "electron:build": "next build && tsc -p tsconfig.electron.json && electron-builder",
+    "electron:dist": "next build && tsc -p tsconfig.electron.json && electron-builder --publish always"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -25,6 +29,8 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "date-holidays": "^3.28.0",
+    "electron": "^42.0.0",
+    "electron-updater": "^6.8.3",
     "lucide-react": "^1.14.0",
     "next": "16.2.4",
     "react": "19.2.5",
@@ -40,9 +46,43 @@
     "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
+    "electron-builder": "^26.8.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
-    "typescript": "^6"
+    "ts-node": "^10.9.2",
+    "typescript": "^6",
+    "wait-on": "^9.0.5"
+  },
+  "build": {
+    "appId": "com.taxablecurve.jira-time-tracker",
+    "productName": "Jira Time Tracker",
+    "icon": "resources/icon.png",
+    "asar": false,
+    "publish": {
+      "provider": "github",
+      "owner": "TaxableCurve",
+      "repo": "jira-time-tracker"
+    },
+    "files": [
+      ".next/standalone/**",
+      ".next/static/**",
+      "public/**",
+      "electron/dist/**",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "electron/dist/main.js"
+    },
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"]
+    }
   }
 }
