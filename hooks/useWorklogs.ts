@@ -14,6 +14,7 @@ export interface WorklogEvent {
   timeSpentSeconds: number;
   originalEstimateSeconds: number | null;
   totalTimeSpentSeconds: number | null;
+  issueType: string;
 }
 
 export function useWorklogRange(from: Date, to: Date) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { ReportFilters, getRangeFromPreset, type RangePreset, type DateRange } from "@/components/reports/ReportFilters";
 import { SummaryCards } from "@/components/reports/SummaryCards";
@@ -11,6 +11,7 @@ import { useWorklogRange } from "@/hooks/useWorklogs";
 const HoursByDay = dynamic(() => import("@/components/reports/HoursByDay").then((m) => m.HoursByDay), { ssr: false });
 const HoursByProject = dynamic(() => import("@/components/reports/HoursByProject").then((m) => m.HoursByProject), { ssr: false });
 const HoursByProjectGroup = dynamic(() => import("@/components/reports/HoursByProjectGroup").then((m) => m.HoursByProjectGroup), { ssr: false });
+const HoursByIssueType = dynamic(() => import("@/components/reports/HoursByIssueType").then((m) => m.HoursByIssueType), { ssr: false });
 const HoursHeatmap = dynamic(() => import("@/components/reports/HoursHeatmap").then((m) => m.HoursHeatmap), { ssr: false });
 
 export default function ReportsPage() {
@@ -24,6 +25,16 @@ export default function ReportsPage() {
   };
 
   const { data: worklogs, isLoading } = useWorklogRange(range.from, range.to);
+
+  const showProjectGroup = useMemo(
+    () => new Set(worklogs?.map((w) => w.projectKey)).size > 1,
+    [worklogs]
+  );
+  const showIssueType = useMemo(
+    () => new Set(worklogs?.map((w) => w.issueType)).size > 1,
+    [worklogs]
+  );
+  const bothHalf = showProjectGroup && showIssueType;
 
   return (
     <div className="p-5">
@@ -63,16 +74,21 @@ export default function ReportsPage() {
           <div className="lg:col-span-2">
             <HoursByDay worklogs={worklogs} from={range.from} to={range.to} />
           </div>
-          <div className="lg:col-span-2">
-            <HoursByProjectGroup worklogs={worklogs} />
+          {showProjectGroup && (
+            <div className={bothHalf ? "" : "lg:col-span-2"}>
+              <HoursByProjectGroup worklogs={worklogs} />
+            </div>
+          )}
+          {showIssueType && (
+            <div className={bothHalf ? "" : "lg:col-span-2"}>
+              <HoursByIssueType worklogs={worklogs} />
+            </div>
+          )}
+          <div className="flex flex-col">
+            <HoursByProject worklogs={worklogs} />
           </div>
-          <div className="lg:col-span-2 flex flex-col lg:flex-row gap-5 items-start">
-            <div className="flex-1 min-w-0">
-              <HoursByProject worklogs={worklogs} />
-            </div>
-            <div className="shrink-0">
-              <HoursHeatmap worklogs={worklogs} from={range.from} to={range.to} />
-            </div>
+          <div className="flex flex-col">
+            <HoursHeatmap worklogs={worklogs} from={range.from} to={range.to} />
           </div>
           <div className="lg:col-span-2">
             <EstimateAccuracy worklogs={worklogs} />
