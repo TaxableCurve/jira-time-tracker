@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { secondsToHuman } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { useTransitions, useExecuteTransition } from "@/hooks/useJira";
+import { getConfig } from "@/lib/config";
+import { Button } from "@/components/ui/button";
 
 interface Issue {
   id: string;
@@ -14,6 +16,7 @@ interface Issue {
     project: { key: string; name: string };
     timeoriginalestimate: number | null;
     timespent: number | null;
+    issuetype: { name: string };
   };
 }
 
@@ -27,6 +30,7 @@ function projectColor(key: string): string {
   }
   return PROJECT_COLORS[key];
 }
+
 
 const STATUS_COLORS: Record<string, string> = {
   "blue-grey": "#6B7280",
@@ -87,6 +91,7 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
   const [showTransitions, setShowTransitions] = useState(false);
   const color = projectColor(issue.fields.project.key);
   const statusColor = STATUS_COLORS[issue.fields.status.statusCategory.colorName] ?? "#6B7280";
+  const jiraUrl = `https://${getConfig()?.baseUrl}/browse/${issue.key}`;
 
   return (
     <div
@@ -158,33 +163,37 @@ export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
           )}
         </div>
 
-        {/* Timer button */}
-        {onStartTimer && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onStartTimer(issue);
-            }}
-            className={`flex-shrink-0 transition-all duration-150 size-6 flex items-center justify-center rounded ${isTimerActive ? "opacity-100" : "opacity-0 group-hover:opacity-80"}`}
-            style={{
-              background: isTimerActive ? "rgba(6,182,212,0.2)" : "rgba(255,255,255,0.06)",
-              color: isTimerActive ? "#06B6D4" : "#9A9AA4",
-            }}
-            aria-label={isTimerActive ? `Stop timer for ${issue.key}` : `Start timer for ${issue.key}`}
-            title={isTimerActive ? "Stop timer" : "Start timer"}
-          >
-            {isTimerActive ? (
-              <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
-                <rect x="0" y="0" width="3" height="8" rx="0.5" />
-                <rect x="5" y="0" width="3" height="8" rx="0.5" />
-              </svg>
-            ) : (
-              <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
-                <path d="M1 0.5L7.5 4L1 7.5V0.5Z" />
-              </svg>
-            )}
-          </button>
-        )}
+        {/* Action buttons */}
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <Button as="a" variant="icon" size="icon-xs" href={jiraUrl} target="_blank" rel="noopener noreferrer" title="Open in Jira" onClick={(e) => e.stopPropagation()}>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 2H2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V6" />
+              <path d="M6.5 1h2.5v2.5" />
+              <line x1="4.5" y1="5.5" x2="9" y2="1" />
+            </svg>
+          </Button>
+          {onStartTimer && (
+            <Button
+              variant="icon"
+              size="icon-xs"
+              isActive={isTimerActive}
+              title={isTimerActive ? "Stop timer" : "Start timer"}
+              aria-label={isTimerActive ? `Stop timer for ${issue.key}` : `Start timer for ${issue.key}`}
+              onClick={(e) => { e.stopPropagation(); onStartTimer(issue); }}
+            >
+              {isTimerActive ? (
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+                  <rect x="0" y="0" width="3" height="8" rx="0.5" />
+                  <rect x="5" y="0" width="3" height="8" rx="0.5" />
+                </svg>
+              ) : (
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+                  <path d="M1 0.5L7.5 4L1 7.5V0.5Z" />
+                </svg>
+              )}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

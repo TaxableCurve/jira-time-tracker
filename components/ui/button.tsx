@@ -16,6 +16,8 @@ const buttonVariants = cva(
           "bg-destructive text-white font-semibold hover:bg-destructive/90",
         ghost:
           "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent hover:border-white/8 active:scale-[0.98]",
+        icon:
+          "bg-white/6 text-[#767680] hover:bg-white/10 hover:text-[#D4D4D0] data-[active=true]:bg-primary/20 data-[active=true]:text-primary data-[active=true]:hover:text-primary",
         toggle:
           "uppercase tracking-[0.12em] border bg-white/4 text-muted-foreground border-white/7 hover:bg-white/8 hover:text-foreground data-[active=true]:bg-primary/12 data-[active=true]:text-primary data-[active=true]:border-primary/25 data-[active=true]:hover:bg-primary/12",
       },
@@ -36,17 +38,21 @@ const buttonVariants = cva(
   }
 )
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
-  isActive?: boolean
-}
+type ButtonProps =
+  | (React.ButtonHTMLAttributes<HTMLButtonElement> & VariantProps<typeof buttonVariants> & { as?: "button"; isActive?: boolean })
+  | (React.AnchorHTMLAttributes<HTMLAnchorElement> & VariantProps<typeof buttonVariants> & { as: "a"; isActive?: boolean })
 
-function Button({ className, variant, size, isActive, ...props }: ButtonProps) {
+function Button({ className, variant, size, isActive, as, ...props }: ButtonProps & { as?: "button" | "a" }) {
+  const cls = cn(buttonVariants({ variant, size, className }))
+  if (as === "a") {
+    return <a data-slot="button" data-active={isActive} className={cls} {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)} />
+  }
   return (
     <button
       data-slot="button"
       data-active={isActive}
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
+      className={cls}
+      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
     />
   )
 }
