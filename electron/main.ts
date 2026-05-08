@@ -1,7 +1,6 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { spawn, ChildProcess } from 'child_process'
 import * as path from 'path'
-import * as net from 'net'
 import * as http from 'http'
 import { initUpdater } from './updater'
 
@@ -10,16 +9,6 @@ let nextServer: ChildProcess | null = null
 let mainWindow: BrowserWindow | null = null
 let currentPort: number = 0
 
-function findFreePort(): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const server = net.createServer()
-    server.listen(0, '127.0.0.1', () => {
-      const addr = server.address() as net.AddressInfo
-      server.close(() => resolve(addr.port))
-    })
-    server.on('error', reject)
-  })
-}
 
 function waitForServer(url: string, timeoutMs = 30_000): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -52,7 +41,8 @@ async function startNextServer(): Promise<number> {
     return 3000
   }
 
-  const port = await findFreePort()
+  // Fixed port so localStorage origin stays consistent across sessions
+  const port = 47891
   const appRoot = app.getAppPath().replace('app.asar', 'app.asar.unpacked')
   const serverPath = path.join(appRoot, '.next', 'standalone', 'server.js')
 
