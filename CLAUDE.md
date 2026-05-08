@@ -26,14 +26,14 @@ Electron + Next.js app for logging time to Jira with a live timer, interactive c
 ## Dev commands
 
 ```bash
-pnpm dev                  # Next.js only
-pnpm electron:dev         # Electron + Next.js together
-pnpm build                # Production Next.js build
-pnpm electron:build       # Full Electron distributable
-pnpm lint                 # ESLint
-pnpm release:patch        # Bump patch version + push + push tags
-pnpm release:minor        # Bump minor version + push + push tags
-pnpm release:major        # Bump major version + push + push tags
+npm run dev                  # Next.js only
+npm run electron:dev         # Electron + Next.js together
+npm run build                # Production Next.js build
+npm run electron:build       # Full Electron distributable
+npm run lint                 # ESLint
+npm run release:patch        # Bump patch version + push + push tags
+npm run release:minor        # Bump minor version + push + push tags
+npm run release:major        # Bump major version + push + push tags
 ```
 
 ## Project structure
@@ -59,5 +59,4 @@ electron/             # Electron main process
 
 ## Package manager
 
-This project uses **pnpm**. Always use `pnpm` — never `npm` or `yarn`.
-The `.npmrc` has `shamefully-hoist=true` and `strict-peer-dependencies=false` to handle peer dep conflicts.
+This project uses **npm**. Always use `npm install --legacy-peer-deps` when installing packages — there is a known peer dep conflict that requires it.
