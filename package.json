@@ -14,7 +14,7 @@
     "release:patch": "npm version patch && git push && git push --tags",
     "release:minor": "npm version minor && git push && git push --tags",
     "release:major": "npm version major && git push && git push --tags",
-    "electron:dev": "tsc -p tsconfig.electron.json && concurrently \"next dev\" \"wait-on http://localhost:3000/api/health && electron .\"",
+    "electron:dev": "tsc -p tsconfig.electron.json && concurrently \"next dev\" \"wait-on http://localhost:3000/api/health && NODE_ENV=development electron .\"",
     "electron:build": "next build && tsc -p tsconfig.electron.json && electron-builder",
     "electron:dist": "next build && tsc -p tsconfig.electron.json && electron-builder --publish always"
   },
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^25",
+    "@types/node": "^25.6.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "concurrently": "^9.2.1",
