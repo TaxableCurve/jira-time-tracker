@@ -2,7 +2,13 @@ import { autoUpdater } from 'electron-updater'
 import { dialog } from 'electron'
 
 export function initUpdater() {
-  autoUpdater.checkForUpdatesAndNotify()
+  autoUpdater.on('error', (err) => {
+    console.log(`[updater] check failed: ${err.message}`)
+  })
+
+  autoUpdater.checkForUpdatesAndNotify().catch((err) => {
+    console.log(`[updater] check failed: ${err.message}`)
+  })
 
   autoUpdater.on('update-downloaded', (info) => {
     dialog
