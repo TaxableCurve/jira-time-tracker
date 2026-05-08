@@ -3,8 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getConfig, configHeaders } from "@/lib/config";
 
-function headers() {
-  const config = getConfig();
+async function headers() {
+  const config = await getConfig();
   if (!config) throw new Error("No Jira config");
   return configHeaders(config);
 }
@@ -13,7 +13,7 @@ export function useProjects() {
   return useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
-      const res = await fetch("/api/jira/projects", { headers: headers() });
+      const res = await fetch("/api/jira/projects", { headers: await headers() });
       if (!res.ok) throw new Error("Failed to fetch projects");
       return res.json() as Promise<{ id: string; key: string; name: string }[]>;
     },
@@ -26,7 +26,7 @@ export function useIssues(projectKey?: string, statusFilter: string = "active") 
     queryFn: async () => {
       const params = new URLSearchParams({ statusFilter });
       if (projectKey) params.set("project", projectKey);
-      const res = await fetch(`/api/jira/issues?${params}`, { headers: headers() });
+      const res = await fetch(`/api/jira/issues?${params}`, { headers: await headers() });
       if (!res.ok) throw new Error("Failed to fetch issues");
       return res.json();
     },
@@ -37,7 +37,7 @@ export function useIssueSearch(query: string) {
   return useQuery({
     queryKey: ["issue-search", query],
     queryFn: async () => {
-      const res = await fetch(`/api/jira/issues/search?q=${encodeURIComponent(query)}`, { headers: headers() });
+      const res = await fetch(`/api/jira/issues/search?q=${encodeURIComponent(query)}`, { headers: await headers() });
       if (!res.ok) throw new Error("Failed to search issues");
       return res.json();
     },
@@ -57,7 +57,7 @@ export function useUpdateWorklog() {
     }) => {
       const res = await fetch(`/api/jira/worklogs/${payload.issueKey}/${payload.worklogId}`, {
         method: "PUT",
-        headers: { ...headers(), "Content-Type": "application/json" },
+        headers: { ...await headers(), "Content-Type": "application/json" },
         body: JSON.stringify({ timeSpentSeconds: payload.timeSpentSeconds, startedAt: payload.startedAt }),
       });
       if (!res.ok) {
@@ -79,7 +79,7 @@ export function useDeleteWorklog() {
     mutationFn: async ({ issueKey, worklogId }: { issueKey: string; worklogId: string }) => {
       const res = await fetch(`/api/jira/worklogs/${issueKey}/${worklogId}`, {
         method: "DELETE",
-        headers: headers(),
+        headers: await headers(),
       });
       if (!res.ok) {
         const text = await res.text();
@@ -99,7 +99,7 @@ export function useTransitions(issueKey: string) {
   return useQuery({
     queryKey: ["transitions", issueKey],
     queryFn: async () => {
-      const res = await fetch(`/api/jira/transitions?issueKey=${issueKey}`, { headers: headers() });
+      const res = await fetch(`/api/jira/transitions?issueKey=${issueKey}`, { headers: await headers() });
       if (!res.ok) throw new Error("Failed to fetch transitions");
       return res.json() as Promise<{ id: string; name: string; to: { statusCategory: { colorName: string } } }[]>;
     },
@@ -113,7 +113,7 @@ export function useExecuteTransition() {
     mutationFn: async ({ issueKey, transitionId }: { issueKey: string; transitionId: string }) => {
       const res = await fetch("/api/jira/transitions", {
         method: "POST",
-        headers: { ...headers(), "Content-Type": "application/json" },
+        headers: { ...await headers(), "Content-Type": "application/json" },
         body: JSON.stringify({ issueKey, transitionId }),
       });
       if (!res.ok) throw new Error("Failed to execute transition");
@@ -135,7 +135,7 @@ export function useCreateWorklog() {
     }) => {
       const res = await fetch("/api/jira/worklogs", {
         method: "POST",
-        headers: { ...headers(), "Content-Type": "application/json" },
+        headers: { ...await headers(), "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       if (!res.ok) {

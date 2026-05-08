@@ -2,17 +2,19 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getConfig } from "@/lib/config";
 
 export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    const config = localStorage.getItem("jira_config");
-    if (config) {
-      router.replace("/calendar");
-    } else {
-      router.replace("/setup");
-    }
+    getConfig().then((config) => {
+      if (config) {
+        router.replace("/calendar");
+      } else {
+        router.replace("/setup");
+      }
+    });
   }, [router]);
 
   return null;

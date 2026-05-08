@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { secondsToHuman } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { useTransitions, useExecuteTransition } from "@/hooks/useJira";
-import { getConfig } from "@/lib/config";
+import { useConfig } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 
 interface Issue {
@@ -89,9 +89,10 @@ function StatusDropdown({ issueKey, onClose }: { issueKey: string; onClose: () =
 
 export function IssueCard({ issue, onStartTimer, isTimerActive }: Props) {
   const [showTransitions, setShowTransitions] = useState(false);
+  const config = useConfig();
   const color = projectColor(issue.fields.project.key);
   const statusColor = STATUS_COLORS[issue.fields.status.statusCategory.colorName] ?? "#6B7280";
-  const jiraUrl = `https://${getConfig()?.baseUrl}/browse/${issue.key}`;
+  const jiraUrl = `https://${config?.baseUrl}/browse/${issue.key}`;
 
   return (
     <div

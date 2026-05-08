@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getConfig, configHeaders } from "@/lib/config";
+import { useConfig, configHeaders } from "@/lib/config";
 
 export interface WorklogEvent {
   id: string;
@@ -18,7 +18,7 @@ export interface WorklogEvent {
 }
 
 export function useWorklogRange(from: Date, to: Date) {
-  const config = getConfig();
+  const config = useConfig();
   return useQuery({
     queryKey: ["worklogs", from.toISOString().slice(0, 10), to.toISOString().slice(0, 10)],
     queryFn: async (): Promise<WorklogEvent[]> => {
