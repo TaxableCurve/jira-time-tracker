@@ -60,7 +60,11 @@
     "appId": "com.taxablecurve.jira-time-tracker",
     "productName": "Jira Time Tracker",
     "icon": "resources/icons",
-    "asar": false,
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/sharp/**",
+      "node_modules/@img/**"
+    ],
     "publish": {
       "provider": "github",
       "owner": "TaxableCurve",
