@@ -1,7 +1,8 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, shell, safeStorage } from 'electron'
 import { spawn, ChildProcess } from 'child_process'
 import * as path from 'path'
 import * as http from 'http'
+import * as fs from 'fs'
 import { initUpdater } from './updater'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -91,8 +92,36 @@ function createWindow(port: number): void {
   })
 }
 
+function getConfigPath(): string {
+  return path.join(app.getPath('userData'), 'config.enc')
+}
+
+function readConfig(): string | null {
+  const filePath = getConfigPath()
+  if (!fs.existsSync(filePath)) return null
+  try {
+    const encrypted = fs.readFileSync(filePath)
+    return safeStorage.decryptString(encrypted)
+  } catch {
+    return null
+  }
+}
+
+function writeConfig(data: string): void {
+  const encrypted = safeStorage.encryptString(data)
+  fs.writeFileSync(getConfigPath(), encrypted)
+}
+
+function deleteConfig(): void {
+  const filePath = getConfigPath()
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+}
+
 app.whenReady().then(async () => {
   ipcMain.handle('app:version', () => app.getVersion())
+  ipcMain.handle('config:get', () => readConfig())
+  ipcMain.handle('config:set', (_e, data: string) => writeConfig(data))
+  ipcMain.handle('config:clear', () => deleteConfig())
 
   try {
     const port = await startNextServer()

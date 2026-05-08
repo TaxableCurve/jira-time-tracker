@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { saveConfig } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,10 +38,7 @@ export default function SetupPage() {
         return;
       }
 
-      localStorage.setItem(
-        "jira_config",
-        JSON.stringify({ baseUrl, email: form.email, token: form.token, accountId: data.accountId })
-      );
+      await saveConfig({ baseUrl, email: form.email, token: form.token, accountId: data.accountId });
 
       router.push("/calendar");
     } catch {

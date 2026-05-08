@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { LogoMark } from "@/components/ui/logo-mark";
 import { Settings, Bell, LogIn, LogOut } from "lucide-react";
 import { useUpdateCheck } from "@/hooks/useUpdateCheck";
+import { getConfig, saveConfig, clearConfig } from "@/lib/config";
 
 function TimerBar() {
   const { issueKey, issueName, startTime, isRunning, stop } = useTimerStore();
@@ -72,13 +73,13 @@ function TimerBar() {
 
 function SettingsModal({ onClose }: { onClose: () => void }) {
   const router = useRouter();
-  const [form, setForm] = useState(() => {
-    if (typeof window === "undefined") return { baseUrl: "", email: "", token: "" };
-    const raw = localStorage.getItem("jira_config");
-    if (!raw) return { baseUrl: "", email: "", token: "" };
-    const config = JSON.parse(raw);
-    return { baseUrl: config.baseUrl ?? "", email: config.email ?? "", token: config.token ?? "" };
-  });
+  const [form, setForm] = useState({ baseUrl: "", email: "", token: "" });
+
+  useEffect(() => {
+    getConfig().then((config) => {
+      if (config) setForm({ baseUrl: config.baseUrl, email: config.email, token: config.token });
+    });
+  }, []);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [confirmDisconnect, setConfirmDisconnect] = useState(false);
@@ -104,10 +105,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
         return;
       }
 
-      localStorage.setItem(
-        "jira_config",
-        JSON.stringify({ baseUrl, email: form.email, token: form.token, accountId: data.accountId })
-      );
+      await saveConfig({ baseUrl, email: form.email, token: form.token, accountId: data.accountId });
       setStatus("success");
       setTimeout(() => {
         onClose();
@@ -119,8 +117,8 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const handleDisconnect = () => {
-    localStorage.removeItem("jira_config");
+  const handleDisconnect = async () => {
+    await clearConfig();
     router.replace("/setup");
   };
 
@@ -320,8 +318,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const config = localStorage.getItem("jira_config");
-    if (!config) router.replace("/setup");
+    getConfig().then((config) => {
+      if (!config) router.replace("/setup");
+    });
   }, [router]);
 
   return <AppShell>{children}</AppShell>;
