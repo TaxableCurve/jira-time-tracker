@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { spawn, ChildProcess } from 'child_process'
 import * as path from 'path'
 import * as net from 'net'
@@ -94,6 +94,11 @@ function createWindow(port: number): void {
 
   mainWindow.loadURL(`http://127.0.0.1:${port}`)
   mainWindow.on('closed', () => { mainWindow = null })
+
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url)
+    return { action: 'deny' }
+  })
 }
 
 app.whenReady().then(async () => {
