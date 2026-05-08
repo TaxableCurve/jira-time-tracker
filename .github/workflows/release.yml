@@ -51,6 +51,9 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
+      - name: Enable long paths
+        run: Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1
+        shell: powershell
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
