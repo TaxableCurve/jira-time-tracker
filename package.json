@@ -62,6 +62,7 @@
     "icon": "resources/icons",
     "asar": true,
     "asarUnpack": [
+      ".next/standalone/**",
       "node_modules/sharp/**",
       "node_modules/@img/**"
     ],

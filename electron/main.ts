@@ -53,9 +53,10 @@ async function startNextServer(): Promise<number> {
   }
 
   const port = await findFreePort()
-  const serverPath = path.join(app.getAppPath(), '.next', 'standalone', 'server.js')
+  const appRoot = app.getAppPath().replace('app.asar', 'app.asar.unpacked')
+  const serverPath = path.join(appRoot, '.next', 'standalone', 'server.js')
 
-  const standaloneDir = path.join(app.getAppPath(), '.next', 'standalone')
+  const standaloneDir = path.join(appRoot, '.next', 'standalone')
 
   nextServer = spawn(process.execPath, [serverPath], {
     cwd: standaloneDir,
