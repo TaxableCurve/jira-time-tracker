@@ -55,7 +55,10 @@ async function startNextServer(): Promise<number> {
   const port = await findFreePort()
   const serverPath = path.join(app.getAppPath(), '.next', 'standalone', 'server.js')
 
+  const standaloneDir = path.join(app.getAppPath(), '.next', 'standalone')
+
   nextServer = spawn(process.execPath, [serverPath], {
+    cwd: standaloneDir,
     env: {
       ...process.env,
       ELECTRON_RUN_AS_NODE: '1',

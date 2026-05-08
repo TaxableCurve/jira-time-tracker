@@ -1,13 +1,13 @@
 import sharp from 'sharp'
 import { readFileSync, mkdirSync } from 'fs'
 
-mkdirSync('resources', { recursive: true })
-
 const svg = readFileSync('app/icon.svg')
+const sizes = [16, 32, 48, 64, 128, 256, 512, 1024]
 
-await sharp(svg, { density: 300 })
-  .resize(1024, 1024)
-  .png()
-  .toFile('resources/icon.png')
+mkdirSync('resources/icons', { recursive: true })
 
-console.log('Generated resources/icon.png (1024×1024)')
+for (const size of sizes) {
+  const outPath = `resources/icons/${size}x${size}.png`
+  await sharp(svg, { density: 300 }).resize(size, size).png().toFile(outPath)
+  console.log(`Generated ${outPath}`)
+}

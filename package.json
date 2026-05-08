@@ -15,8 +15,8 @@
     "release:minor": "npm version minor && git push && git push --tags",
     "release:major": "npm version major && git push && git push --tags",
     "electron:dev": "tsc -p tsconfig.electron.json && concurrently \"next dev\" \"wait-on http://localhost:3000/api/health && NODE_ENV=development electron .\"",
-    "electron:build": "next build && tsc -p tsconfig.electron.json && electron-builder",
-    "electron:dist": "next build && tsc -p tsconfig.electron.json && electron-builder --publish always"
+    "electron:build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && tsc -p tsconfig.electron.json && electron-builder",
+    "electron:dist": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && tsc -p tsconfig.electron.json && electron-builder --publish always"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -59,7 +59,7 @@
   "build": {
     "appId": "com.taxablecurve.jira-time-tracker",
     "productName": "Jira Time Tracker",
-    "icon": "resources/icon.png",
+    "icon": "resources/icons",
     "asar": false,
     "publish": {
       "provider": "github",
@@ -98,6 +98,7 @@
         "AppImage",
         "deb"
       ]
-    }
+    },
+    "deb": {}
   }
 }
