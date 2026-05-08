@@ -23,7 +23,7 @@ git cherry-pick 13aad02..18111b2
 
 ## Tareas pendientes
 
-### Task 9: Test dev mode (manual — requiere GUI)
+### Task 9: Test dev mode (manual — requiere GUI) ✅
 
 Ejecutar en tu máquina:
 
@@ -32,27 +32,27 @@ npm run electron:dev
 ```
 
 Verificar:
-- [ ] Se abre una ventana nativa con la app
-- [ ] La navegación Calendar / Reports funciona
+- [x] Se abre una ventana nativa con la app
+- [x] La navegación Calendar / Reports funciona
 - [ ] En DevTools: `await window.electronApp.getVersion()` retorna `"1.5.0"`
-- [ ] Al cerrar la ventana, el proceso termina limpiamente
+- [x] Al cerrar la ventana, el proceso termina limpiamente
 
 ---
 
-### Task 10: Test production build (manual — tarda ~5 min)
+### Task 10: Test production build (manual — tarda ~5 min) ✅
 
 ```bash
 npm run electron:build
 ```
 
 Verificar:
-- [ ] Termina sin errores
-- [ ] Existen archivos en `dist/`:
+- [x] Termina sin errores
+- [x] Existen archivos en `dist/`:
   ```bash
   ls dist/
   # esperado: *.AppImage y *.deb en Linux
   ```
-- [ ] Ejecutar el AppImage y confirmar que la app abre y funciona end-to-end
+- [x] Ejecutar el AppImage y confirmar que la app abre y funciona end-to-end
 
 ---
 
