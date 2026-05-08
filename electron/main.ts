@@ -3,6 +3,7 @@ import { spawn, ChildProcess } from 'child_process'
 import * as path from 'path'
 import * as http from 'http'
 import * as fs from 'fs'
+import * as net from 'net'
 import { initUpdater } from './updater'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -35,6 +36,17 @@ function waitForServer(url: string, timeoutMs = 30_000): Promise<void> {
   })
 }
 
+function findFreePort(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer()
+    server.listen(0, '127.0.0.1', () => {
+      const addr = server.address() as net.AddressInfo
+      server.close(() => resolve(addr.port))
+    })
+    server.on('error', reject)
+  })
+}
+
 async function startNextServer(): Promise<number> {
   if (isDev) {
     // In dev, Next.js is already running via `concurrently` in electron:dev
@@ -42,8 +54,7 @@ async function startNextServer(): Promise<number> {
     return 3000
   }
 
-  // Fixed port so localStorage origin stays consistent across sessions
-  const port = 47891
+  const port = await findFreePort()
   const appRoot = app.getAppPath().replace('app.asar', 'app.asar.unpacked')
   const serverPath = path.join(appRoot, '.next', 'standalone', 'server.js')
 
