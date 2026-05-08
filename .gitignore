@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# electron
+dist/
+electron/dist/
+
+# superpowers brainstorm sessions
+.superpowers/
