@@ -47,3 +47,4 @@ electron/dist/
 # superpowers brainstorm sessions
 .superpowers/
 .worktrees/
+package-lock.json
